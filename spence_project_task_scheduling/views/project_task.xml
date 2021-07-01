@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_task_tree2_sequence_handle" model="ir.ui.view">
+        <field name="name">Spence: Task List</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_tree2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="editable">bottom</attribute>
+            </xpath>
+            <xpath expr="//field[@name='sequence']" position="attributes">
+                <attribute name="widget">handle</attribute>
+                <attribute name="invisible">0</attribute>
+                <attribute name="readonly">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="duration"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
