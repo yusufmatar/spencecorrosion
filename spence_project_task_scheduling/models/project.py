@@ -17,14 +17,12 @@ class Task(models.Model):
     @api.depends("date_start", "duration", "sequence")
     def _compute_dates(self):
         # We need to add all tasks after any that change since changes will propagate down the list.
-        print()
-        self = (self._origin | self.project_id.task_ids.filtered(lambda t: t.sequence >= min(self.mapped("sequence")))).sorted("sequence")
-        unmodified_tasks = self.project_id.task_ids - self
-        # self = self.self.project_id.task_ids
-        for index, task in enumerate(self):
-            # task.date_start = task.date_start or fields.Date.context_today(task)
+        modified_tasks = (self._origin | self.project_id.tasks.filtered(lambda t: t.sequence >= min(self.mapped("sequence")))).sorted("sequence")
+        unmodified_tasks = self.project_id.tasks - modified_tasks
+        for index, task in enumerate(modified_tasks):
+            # We only update the start date if it is a task or the chage was triggered by drag reordering.
             if index > 0:
-                task.date_start = self[index - 1].date_end + timedelta(days=1)
-            elif unmodified_tasks:
+                task.date_start = modified_tasks[index - 1].date_end + timedelta(days=1)
+            elif unmodified_tasks and len(self) > 1:
                 task.date_start = unmodified_tasks[-1].date_end + timedelta(days=1)
             task.date_end = task.date_start + timedelta(days=task.duration)
