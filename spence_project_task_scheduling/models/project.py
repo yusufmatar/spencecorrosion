@@ -5,7 +5,6 @@ from odoo import api, fields, models
 
 from datetime import timedelta
 
-
 class Task(models.Model):
     _inherit = "project.task"
     _order = "sequence, priority desc, id desc"
@@ -17,8 +16,8 @@ class Task(models.Model):
     @api.depends("date_start", "duration", "sequence")
     def _compute_dates(self):
         # We need to add all tasks after any that change since changes will propagate down the list.
-        modified_tasks = (self._origin | self.project_id.tasks.filtered(lambda t: t.sequence >= min(self.mapped("sequence")))).sorted("sequence")
-        unmodified_tasks = self.project_id.tasks - modified_tasks
+        modified_tasks = (self | self.project_id.tasks.filtered(lambda t: t.sequence >= min(self.mapped("sequence")))).sorted("sequence")
+        unmodified_tasks = self.project_id.tasks - modified_tasks - self._origin
         for index, task in enumerate(modified_tasks):
             # We only update the start date if it is a task or the chage was triggered by drag reordering.
             if index > 0:
