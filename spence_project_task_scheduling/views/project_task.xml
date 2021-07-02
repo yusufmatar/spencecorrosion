@@ -6,6 +6,7 @@
         <field name="inherit_id" ref="project.view_task_tree2"/>
         <field name="arch" type="xml">
             <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">update_all_list_view</attribute>
                 <attribute name="editable">bottom</attribute>
             </xpath>
             <xpath expr="//field[@name='sequence']" position="attributes">
@@ -14,9 +15,9 @@
                 <attribute name="readonly">0</attribute>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
-                <field name="date_start"/>
+                <field name="date_start" force_save="1"/>
                 <field name="date_end"/>
-                <field name="duration"/>
+                <field name="duration" force_save="1"/>
             </xpath>
         </field>
     </record>

@@ -27,6 +27,7 @@ Task ID: 2555527
 
     # always loaded
     'data': [
+        "views/assets.xml",
         "views/project_task.xml"
     ],
     # only loaded in demonstration mode
