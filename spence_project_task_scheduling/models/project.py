@@ -9,33 +9,34 @@ class Task(models.Model):
     _inherit = "project.task"
     _order = "sequence, priority desc, id desc"
 
-    date_start = fields.Date("Start Date", readonly=False, compute="_compute_date_start", default=fields.Date.context_today, store=True)
-    date_end = fields.Date("End Date", compute="_compute_date_end")
+    date_start = fields.Date("Start Date", readonly=False, default=fields.Date.context_today, store=True, compute="_compute_date_start")
+    date_end = fields.Date("End Date", compute="_compute_end_date")
     duration = fields.Integer("Duration in Days", default=1)
 
-    # Because date_start depends on 'itself' (in reality it depends on the the start date of its 
-    # older sibling) we need to manually trigger the compute method on change to effect change
-    # on the younger sibling tasks.
-    @api.onchange('date_start')
-    def _on_change(self):
-        self._compute_date_start()
+    predecessor = fields.Many2one('project.task', string="Predecessor", compute="_compute_siblings")
+    successor = fields.Many2one('project.task', string="Successor", compute="_compute_siblings")
 
-
-    @api.depends('date_start','sequence','duration')
+    @api.depends('predecessor.date_start','predecessor.duration')
     def _compute_date_start(self):
-        # We split the total task list in two. Those that come after the first edited row and 
-        # those that come before.
-        modified_tasks = self.project_id.tasks.filtered(lambda t: t.sequence >= min(self.mapped("sequence")))
-        unmodified_tasks = self.project_id.tasks - modified_tasks
-        for index, task in enumerate(modified_tasks):
-            # We only recompute the start date if was a secondary change or as a result of dragging the sequence handle.
-            # Otherwise, it was manually entered by the user and we don't touch it.
-            if index > 0:
-                task.date_start = modified_tasks[index - 1].date_start + timedelta(days=1+modified_tasks[index - 1].duration)
-            elif unmodified_tasks and len(self) > 1:
-                task.date_start = unmodified_tasks[-1].date_start +  timedelta(days=1+unmodified_tasks[-1].duration)   
+        for task in self:
+            if(task.predecessor):
+                task.date_start = task.predecessor.date_start + timedelta(days=1+task.predecessor.duration)
 
     @api.depends("date_start", "duration")
-    def _compute_date_end(self):
+    def _compute_end_date(self):
         for task in self:
             task.date_end = task.date_start + timedelta(days=task.duration)
+    
+    @api.depends("sequence")
+    def _compute_siblings(self):
+        for task in self:
+            later_tasks = task.project_id.tasks.filtered(lambda t: t.sequence > task.sequence)
+            earlier_tasks = task.project_id.tasks.filtered(lambda t: t.sequence < task.sequence)
+            if later_tasks:
+                task.successor = later_tasks[0]
+            else:
+                task.successor = None
+            if earlier_tasks:
+                task.predecessor = earlier_tasks[-1]
+            else:
+                task.predecessor = None
