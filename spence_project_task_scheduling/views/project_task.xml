@@ -15,9 +15,11 @@
                 <attribute name="readonly">0</attribute>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
+                <field name="predecessor" invisible="1"/>
+                <field name="successor" invisible="1"/>
                 <field name="date_start" force_save="1"/>
                 <field name="date_end"/>
-                <field name="duration" force_save="1"/>
+                <field name="duration"/>
             </xpath>
         </field>
     </record>
