@@ -7,7 +7,7 @@ from datetime import timedelta
 
 class Task(models.Model):
     _inherit = "project.task"
-    _order = "sequence, priority desc, id desc"
+    _order = "sequence, id asc"
 
     date_start = fields.Date("Start Date", readonly=False, default=fields.Date.context_today, store=True, compute="_compute_date_start")
     date_end = fields.Date("End Date", compute="_compute_end_date")
@@ -40,3 +40,11 @@ class Task(models.Model):
                 task.predecessor = earlier_tasks[-1]
             else:
                 task.predecessor = None
+
+    # I'm not sure why but even though we have editable = 'bottom' on the list view, it doesn't
+    # properly compute the sequence number.
+    @api.model
+    def create(self, vals):
+        rec = super(Task, self).create(vals)
+        rec.sequence = max(rec.project_id.tasks.mapped('sequence'))+1
+        return rec
