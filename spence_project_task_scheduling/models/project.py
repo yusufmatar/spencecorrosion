@@ -20,12 +20,12 @@ class Task(models.Model):
     def _compute_date_start(self):
         for task in self:
             if(task.predecessor):
-                task.date_start = task.predecessor.date_start + timedelta(days=1+task.predecessor.duration)
+                task.date_start = task.predecessor.date_start + timedelta(days=task.predecessor.duration)
 
     @api.depends("date_start", "duration")
     def _compute_end_date(self):
         for task in self:
-            task.date_end = task.date_start + timedelta(days=task.duration)
+            task.date_end = task.date_start + timedelta(days=task.duration - 1)
     
     @api.depends("sequence")
     def _compute_siblings(self):
