@@ -9,8 +9,8 @@ class Task(models.Model):
     _inherit = "project.task"
     _order = "sequence, id asc"
 
-    date_start = fields.Date("Start Date", readonly=False, default=fields.Date.context_today, store=True, compute="_compute_date_start")
-    date_end = fields.Date("End Date", compute="_compute_end_date")
+    date_start = fields.Datetime("Start Datetime", readonly=False, default=fields.Date.context_today, store=True, compute="_compute_date_start")
+    date_end = fields.Datetime("End Date", compute="_compute_end_date")
     duration = fields.Integer("Duration in Days", default=1)
     predecessor = fields.Many2one('project.task', string="Predecessor", compute="_compute_siblings", store=True)
 
@@ -22,7 +22,7 @@ class Task(models.Model):
     @api.depends("date_start", "duration")
     def _compute_end_date(self):
         for task in self:
-            task.date_end = task.date_start + timedelta(days=task.duration - 1)
+            task.date_end = task.date_start + timedelta(days=task.duration)
     
     @api.depends("sequence","predecessor.sequence")
     def _compute_siblings(self):
