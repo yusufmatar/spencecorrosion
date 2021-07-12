@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="task_worksheet_meta_view_tree" model="ir.ui.view">
+        <field name="name">Spence: Task Meta Worksheet Tree</field>
+        <field name="model">project.task.worksheet.meta</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="id"/>
+                <field name="date_performed"/>                
+                <field name="date_signed"/>
+                <field name="signed_by"/>
+                <button name="button_go_to_worksheet" string="Edit" type="object" icon="fa-edit" attrs="{'invisible': [('date_signed','!=', False)]}"/>
+                <button name="button_go_to_portal" string="Sign Report" type="object" icon="fa-pencil" attrs="{'invisible': [('date_signed','!=', False)]}"/>
+                <button name="button_go_to_worksheet" string="View" type="object" icon="fa-eye" attrs="{'invisible': [('date_signed','=', False)]}" />
+                <button name="button_send_report" string="Send Report" type="object" icon="fa-paper-plane" attrs="{'invisible': [('date_signed','=', False)]}"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

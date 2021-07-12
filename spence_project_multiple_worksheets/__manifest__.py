@@ -13,13 +13,18 @@
 
     'category': 'Custom Development',
     'version': '1.0',
-    'license': 'OPL-1',
+    'license': 'OEEL-1',
 
     # any module necessary for this one to work correctly
-    'depends': ['project'],
+    'depends': ['project','industry_fsm'],
 
     # always loaded
     'data': [
+        'security/ir.model.access.csv',
+        'report/worksheet_custom_reports.xml',
+        'views/worksheet_meta_view.xml',
+        'views/project_task_views.xml',
+        'views/project_portal_templates.xml'
     ],
     # only loaded in demonstration mode
     'demo': [],
