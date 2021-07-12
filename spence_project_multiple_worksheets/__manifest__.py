@@ -16,7 +16,7 @@
     'license': 'OEEL-1',
 
     # any module necessary for this one to work correctly
-    'depends': ['project','industry_fsm'],
+    'depends': ['industry_fsm_report'],
 
     # always loaded
     'data': [
