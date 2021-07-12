@@ -13,9 +13,6 @@ class ProjectWorksheetTemplate(models.Model):
         # Drop constraint that we can only have one worksheet per task.
         task_conname = '%s_%s' % (name, 'x_task_id_uniq')
         tools.drop_constraint(self.env.cr, name, task_conname)
-        # Add constraint that we can only have one worksheet per worksheet.meta
-        worksheet_conname = '%s_%s' % (name, 'x_worksheet_id_uniq')
-        tools.add_constraint(self.env.cr, name, worksheet_conname, 'unique(x_worksheet_id)')
         # Make the template model inherit from a generic worksheet model
         model = template.model_id
         model.write({'field_id': [
@@ -28,6 +25,9 @@ class ProjectWorksheetTemplate(models.Model):
                 'on_delete': 'cascade',
             }),
         ]})
+        # Add constraint that we can only have one worksheet per worksheet.meta
+        worksheet_conname = '%s_%s' % (name, 'x_worksheet_id_uniq')
+        tools.add_constraint(self.env.cr, name, worksheet_conname, 'unique(x_worksheet_id)')
         # Change the x_task_id to be a related field instead
         task_id_field = model.field_id.filtered(lambda f: f.name =='x_task_id')
         task_id_field.write({
