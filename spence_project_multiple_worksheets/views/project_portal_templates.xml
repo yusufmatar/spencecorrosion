@@ -4,5 +4,8 @@
         <xpath expr="//t[@t-set='call_url']" position="attributes">
             <attribute name="t-value">worksheet.get_portal_url(suffix='/sign/%s' % source)</attribute>
         </xpath>
+        <xpath expr="//t[@t-set='doc']" position="attributes">
+            <attribute name="t-value">worksheet</attribute>
+        </xpath>
     </template>
 </odoo>

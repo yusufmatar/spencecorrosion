@@ -19,8 +19,7 @@ class CustomerPortal(CustomerPortal):
             return request.redirect('/my')
         worksheet_map = {}
         if worksheet_sudo.worksheet_template_id:
-            x_model = worksheet_sudo.worksheet_template_id.model_id.model
-            worksheet = request.env[x_model].sudo().search([('x_worksheet_id', '=', worksheet_sudo.id)], limit=1, order="create_date DESC")  # take the last one
+            worksheet = worksheet_sudo._get_worksheet()
             worksheet_map[worksheet_sudo.id] = worksheet
         return request.render("industry_fsm_report.portal_my_worksheet", {'worksheet_map': worksheet_map, 'task': worksheet_sudo.task_id, 'worksheet': worksheet_sudo,'message': message, 'source': source})
 
@@ -50,7 +49,7 @@ class CustomerPortal(CustomerPortal):
             return {'error': _('Invalid signature data.')}
 
         pdf = request.env.ref('spence_project_multiple_worksheets.task_custom_report').sudo()._render_qweb_pdf([worksheet_sudo.id])[0]
-        worksheet_sudo.task_id.message_post(body=_('The worksheet has been signed'), attachments=[('%s.pdf' % worksheet_sudo.task_id.name, pdf)])
+        worksheet_sudo.task_id.message_post(body=_('The worksheet has been signed'), attachments=[('%s - %d.pdf' % (worksheet_sudo.name, worksheet_sudo.id), pdf)])
 
         query_string = '&message=sign_ok'
         return {

@@ -7,7 +7,7 @@
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">industry_fsm_report.worksheet_custom</field>
             <field name="report_file">industry_fsm_report.worksheet_custom</field>
-            <field name="print_report_name">'Worksheet %s - %s' % (object.task_id.name, object.task_id.partner_id.name)</field>
+            <field name="print_report_name">'Worksheet %s - %s - %d' % (object.name, object.partner_id.name, object.id)</field>
             <field name="binding_model_id" ref="model_project_task_worksheet_meta"/>
             <field name="binding_type">report</field>
         </record>
@@ -20,7 +20,7 @@
             <field name="partner_to">${object.partner_id.id}</field>
             <field name="lang">${object.partner_id.lang}</field>
             <field name="report_template" ref="task_custom_report"/>
-            <field name="report_name">Worksheet ${object.name}${(' - ' + object.partner_id.name) if object.partner_id else ''}.pdf</field>
+            <field name="report_name">Worksheet ${object.name}${(' - ' + object.partner_id.name) if object.partner_id else ''} - ${object.id}.pdf</field>
             <field name="body_html" type="html">
                 <p>
                     Dear ${object.partner_id.name or 'Customer'},<br/><br/>
