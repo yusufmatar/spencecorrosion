@@ -36,7 +36,7 @@ class Task(models.Model):
 class MetaWorksheet(models.Model):
     _name = "project.task.worksheet.meta"
     _description = "Task Worksheet"
-    _inherit = ['portal.mixin']
+    _inherit = ['portal.mixin','mail.thread']
     _inherits = {
         'project.task': 'task_id' 
     }
@@ -48,7 +48,7 @@ class MetaWorksheet(models.Model):
     color = fields.Integer(related='worksheet_template_id.color')
     date_performed = fields.Date(string="Date Performed", default=fields.Date.context_today)
     date_signed = fields.Date(string="Date Signed")
-
+    fsm_is_sent = fields.Boolean(string="Sent", default=False)
 
     def _get_worksheet(self):
         self.ensure_one()
@@ -92,6 +92,10 @@ class MetaWorksheet(models.Model):
                 'fsm_mark_as_sent': True,
             },
         }
+
+    def _message_post_after_hook(self, message, *args, **kwargs):
+        if self.env.context.get('fsm_mark_as_sent') and not self.fsm_is_sent:
+            self.write({'fsm_is_sent': True})
 
     def _compute_access_url(self):
         super(MetaWorksheet, self)._compute_access_url()

@@ -9,10 +9,12 @@
                 <field name="date_performed"/>                
                 <field name="date_signed"/>
                 <field name="signed_by"/>
+                <field name="fsm_is_sent" invisible="1"/>
                 <button name="button_go_to_worksheet" string="Edit" type="object" icon="fa-edit" attrs="{'invisible': [('date_signed','!=', False)]}"/>
                 <button name="button_go_to_portal" string="Sign Report" type="object" icon="fa-pencil" attrs="{'invisible': [('date_signed','!=', False)]}"/>
                 <button name="button_go_to_worksheet" string="View" type="object" icon="fa-eye" attrs="{'invisible': [('date_signed','=', False)]}" />
-                <button name="button_send_report" string="Send Report" type="object" icon="fa-paper-plane" attrs="{'invisible': [('date_signed','=', False)]}"/>
+                <button name="button_send_report" string="Send Report" type="object" icon="fa-paper-plane" attrs="{'invisible': ['|',('date_signed','=', False),('fsm_is_sent','=',True)]}"/>
+                <button name="button_send_report" string="Resend Report" type="object" icon="fa-paper-plane" attrs="{'invisible': ['|',('date_signed','=', False),('fsm_is_sent','=',False)]}"/>
             </tree>
         </field>
     </record>
