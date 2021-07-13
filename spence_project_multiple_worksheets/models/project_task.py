@@ -41,14 +41,14 @@ class MetaWorksheet(models.Model):
         'project.task': 'task_id' 
     }
 
-    task_id = fields.Many2one(comodel_name='project.task')
+    task_id = fields.Many2one(comodel_name='project.task', readonly=True)
     worksheet_template_id = fields.Many2one(comodel_name='project.worksheet.template', string="Worksheet Template", related="task_id.worksheet_template_id")
-    signature = fields.Binary('Signature', help='Signature received through the portal.', copy=False, attachment=True)
-    signed_by = fields.Char('Signed By', help='Name of the person who signed the task.', copy=False)
+    signature = fields.Binary('Signature', help='Signature received through the portal.', copy=False, attachment=True, readonly=True)
+    signed_by = fields.Char('Signed By', help='Name of the person who signed the task.', copy=False, readonly=True)
     color = fields.Integer(related='worksheet_template_id.color')
     date_performed = fields.Date(string="Date Performed", default=fields.Date.context_today)
-    date_signed = fields.Date(string="Date Signed")
-    fsm_is_sent = fields.Boolean(string="Sent", default=False)
+    date_signed = fields.Date(string="Date Signed", readonly=True)
+    fsm_is_sent = fields.Boolean(string="Sent", default=False, readonly=True)
 
     def _get_worksheet(self):
         self.ensure_one()
