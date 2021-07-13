@@ -49,6 +49,7 @@ class MetaWorksheet(models.Model):
     date_performed = fields.Date(string="Date Performed", default=fields.Date.context_today)
     date_signed = fields.Date(string="Date Signed", readonly=True)
     fsm_is_sent = fields.Boolean(string="Sent", default=False, readonly=True)
+    report_attachment = fields.Binary('Report', help='Final PDF Report', copy=False, attachment=True, readonly=True)
 
     def _get_worksheet(self):
         self.ensure_one()

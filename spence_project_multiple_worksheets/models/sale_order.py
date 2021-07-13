@@ -22,7 +22,7 @@ class SaleOrder(models.Model):
         context['from_sale_order'] = True
         return {
             'type': 'ir.actions.act_window',
-            'view_mode': 'list',
+            'view_mode': 'tree,form',
             'res_model': 'project.task.worksheet.meta',
             'name': 'Worksheets',
             'context': context,

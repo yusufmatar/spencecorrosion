@@ -7,6 +7,7 @@ from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from datetime import datetime
 import binascii
+import base64
 
 
 class CustomerPortal(CustomerPortal):
@@ -50,6 +51,7 @@ class CustomerPortal(CustomerPortal):
 
         pdf = request.env.ref('spence_project_multiple_worksheets.task_custom_report').sudo()._render_qweb_pdf([worksheet_sudo.id])[0]
         worksheet_sudo.task_id.message_post(body=_('The worksheet has been signed'), attachments=[('%s - %d.pdf' % (worksheet_sudo.name, worksheet_sudo.id), pdf)])
+        worksheet_sudo.report_attachment = base64.encodebytes(pdf)
 
         query_string = '&message=sign_ok'
         return {
