@@ -16,7 +16,7 @@
     'license': 'OEEL-1',
 
     # any module necessary for this one to work correctly
-    'depends': ['industry_fsm_report'],
+    'depends': ['industry_fsm_report','sale'],
 
     # always loaded
     'data': [
@@ -24,7 +24,8 @@
         'report/worksheet_custom_reports.xml',
         'views/worksheet_meta_view.xml',
         'views/project_task_views.xml',
-        'views/project_portal_templates.xml'
+        'views/project_portal_templates.xml',
+        'views/sale_order.xml'
     ],
     # only loaded in demonstration mode
     'demo': [],

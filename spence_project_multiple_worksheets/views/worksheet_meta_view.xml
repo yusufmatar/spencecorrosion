@@ -4,8 +4,9 @@
         <field name="name">Spence: Task Meta Worksheet Tree</field>
         <field name="model">project.task.worksheet.meta</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="0">
                 <field name="id"/>
+                <field name="task_id" invisible="not context.get('from_sale_order', False)"/>
                 <field name="date_performed"/>                
                 <field name="date_signed"/>
                 <field name="signed_by"/>
