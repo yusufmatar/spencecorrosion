@@ -2,10 +2,15 @@
 {
     'name': "Spence Corrosion: Multiple Worksheets",
 
-    'summary': """Allow for multiple worksheets per task""",
+    'summary': """Multiple worksheets per task""",
 
     'description': """
-        []
+Spence Corrosion: Multiple Worksheets
+=====================================
+Allows for the creation/signing/sending of multiple
+worksheet reports per task.
+
+Task ID: 2585433
         """,
 
     'author': 'Odoo Inc',
