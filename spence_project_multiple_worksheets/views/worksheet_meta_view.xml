@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Tree view -->
     <record id="task_worksheet_meta_view_tree" model="ir.ui.view">
         <field name="name">Spence: Task Meta Worksheet Tree</field>
         <field name="model">project.task.worksheet.meta</field>
@@ -9,7 +10,7 @@
                 <field name="task_id" invisible="not context.get('from_sale_order', False)"/>
                 <field name="date_performed" attrs="{'readonly':[('date_signed','!=', False)]}"/>
                 <field name="date_signed"/>
-                <field name="signed_by"/>
+                <field name="worksheet_signed_by"/>
                 <field name="fsm_is_sent" invisible="1"/>
                 <button name="button_go_to_worksheet" string="Edit Worksheet" type="object" icon="fa-edit" attrs="{'invisible': [('date_signed','!=', False)]}"/>
                 <button name="button_go_to_portal" string="Sign Report" type="object" icon="fa-pencil" attrs="{'invisible': [('date_signed','!=', False)]}"/>
@@ -19,6 +20,9 @@
             </tree>
         </field>
     </record>
+    <!-- Form view
+         Shows the metadata for the sheet. But most importantly, it shows the preview of the final pdf report at the bottom.
+    -->
     <record id="task_worksheet_meta_view_form" model="ir.ui.view">
         <field name="name">Spence: Task Meta Worksheet Form</field>
         <field name="model">project.task.worksheet.meta</field>
@@ -38,11 +42,11 @@
                             <field name="task_id"/>
                             <field name="date_performed" attrs="{'readonly':[('date_signed','!=', False)]}"/>
                             <field name="date_signed"/>
-                            <field name="signed_by"/>
+                            <field name="worksheet_signed_by"/>
                             <field name="fsm_is_sent" invisible="1"/>
                         </group>
                         <group>
-                            <field name="signature" widget="image" nolabel="1"/>
+                            <field name="worksheet_signature" widget="image" nolabel="1"/>
                         </group>
                         <group colspan="4">
                             <field name="report_attachment" widget="pdf_viewer" nolabel="1"/>

@@ -41,8 +41,8 @@ class CustomerPortal(CustomerPortal):
 
         try:
             worksheet_sudo.write({
-                'signature': signature,
-                'signed_by': name,
+                'worksheet_signature': signature,
+                'worksheet_signed_by': name,
                 'date_signed': datetime.today()
             })
 

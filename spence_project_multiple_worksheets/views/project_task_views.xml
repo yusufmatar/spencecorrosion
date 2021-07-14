@@ -17,6 +17,8 @@
             </xpath>
         </field>
     </record>
+    
+    <!-- Worksheet buttons on the task are no longer relevant since we spun that data off into a new model. -->
     <record id="view_task_form2_inherit_remove_buttons" model="ir.ui.view">
         <field name="name">Spence: Remove Default Worksheet Buttons</field>
         <field name="model">project.task</field>

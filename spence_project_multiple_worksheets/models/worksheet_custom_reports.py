@@ -4,9 +4,9 @@
 from odoo import api, models
 
 
-class TaskCustomReport(models.AbstractModel):
+class WorksheetCustomReport(models.AbstractModel):
     _inherit = 'report.industry_fsm_report.worksheet_custom'
-    _description = 'Task Worksheet Custom Report'
+    _description = 'Worksheet Custom Report'
 
     @api.model
     def _get_report_values(self, docids, data=None):

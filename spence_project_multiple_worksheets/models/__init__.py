@@ -5,3 +5,4 @@ from . import project_task
 from . import project_worksheet_template
 from . import worksheet_custom_reports
 from . import sale_order
+from . import worksheet_meta

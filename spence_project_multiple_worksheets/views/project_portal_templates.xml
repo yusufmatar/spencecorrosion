@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- This template normally pulls from the task so we change it to pull from the meta worksheet instead -->
     <template id="portal_my_worksheet_spence" inherit_id="industry_fsm_report.portal_my_worksheet">
         <xpath expr="//t[@t-set='call_url']" position="attributes">
             <attribute name="t-value">worksheet.get_portal_url(suffix='/sign/%s' % source)</attribute>
