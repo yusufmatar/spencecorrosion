@@ -32,7 +32,5 @@ Task ID: 2585433
         'views/project_portal_templates.xml',
         'views/sale_order.xml'
     ],
-    # only loaded in demonstration mode
-    'demo': [],
     'application': False,
 }

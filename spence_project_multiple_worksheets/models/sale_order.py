@@ -14,8 +14,13 @@ class SaleOrder(models.Model):
     def _compute_worksheet_ids(self):
         for order in self:
             task_ids = self.env['project.task'].search(['|', ('sale_line_id', 'in', order.order_line.ids), ('sale_order_id', '=', order.id)])
-            order.worksheet_ids = task_ids.mapped('worksheet_ids')
-            order.worksheet_count = len(order.worksheet_ids)
+            if(task_ids):
+                order.worksheet_ids = task_ids.mapped('worksheet_ids')
+                order.worksheet_count = len(order.worksheet_ids)
+            else:
+                order.worksheet_ids = False
+                order.worksheet_count = 0
+
 
     def button_task_worksheets(self):
         context = dict(self.env.context)
