@@ -92,3 +92,7 @@ class MetaWorksheet(models.Model):
 
     def has_to_be_signed(self):
         return self.task_id.allow_worksheets and not self.worksheet_signature
+
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return 'Worksheet %s - %s - %d' % (self.name, self.partner_id.name, self.id)

@@ -12,12 +12,15 @@ import base64
 
 class CustomerPortal(CustomerPortal):
     @http.route(['/my/worksheet/<int:worksheet_id>/',
-                 '/my/worksheet/<int:worksheet_id>/<string:source>'], type='http', auth="public", website=True)
+                 '/my/worksheet/<int:worksheet_id>/<string:source>',
+                 '/my/worksheet/<int:worksheet_id>/report'], type='http', auth="public", website=True)
     def portal_my_worksheet(self, worksheet_id, access_token=None, source=False, report_type=None, download=False, message=False, **kw):
         try:
             worksheet_sudo = self._document_check_access('project.task.worksheet.meta', worksheet_id, access_token)
         except (AccessError, MissingError):
             return request.redirect('/my')
+        if report_type in ('html', 'pdf', 'text'):
+            return self._show_report(model=worksheet_sudo, report_type=report_type, report_ref='spence_project_multiple_worksheets.task_custom_report', download=download)
         worksheet_map = {}
         if worksheet_sudo.worksheet_template_id:
             worksheet = worksheet_sudo._get_worksheet()
