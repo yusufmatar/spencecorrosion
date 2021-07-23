@@ -8,5 +8,11 @@
         <xpath expr="//t[@t-set='doc']" position="attributes">
             <attribute name="t-value">worksheet</attribute>
         </xpath>
+        <xpath expr="//a[hasclass('o_download_btn')]" position="attributes">
+            <attribute name="t-att-href">worksheet.get_portal_url(suffix='/report', report_type='pdf', download=True)</attribute>
+        </xpath>
+        <xpath expr="//a[hasclass('o_print_btn')]" position="attributes">
+            <attribute name="t-att-href">worksheet.get_portal_url(suffix='/report', report_type='pdf')</attribute>
+        </xpath>
     </template>
 </odoo>
