@@ -5,11 +5,12 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//group[@name='sale_info']" position="inside">
+                <xpath expr="//group[@name='order_details']" position="inside">
                     <field name="use_costed_report"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='qty_delivered']" position="after">
                     <field name="qty_unreported" string="Unreported" optional="show"/>
+                    <field name="qty_reported" string="Reported" optional="hide"/>
                 </xpath>
             </field>
         </record>
