@@ -17,9 +17,9 @@ class CustomerPortal(CustomerPortal):
         if response.get('error', False):
             return response
         worksheet_sudo = self._document_check_access('project.task.worksheet.meta', worksheet_id, access_token=access_token)
-        worksheet_sudo.task_id.sale_line_id._update_qty_reported()
-        worksheet_sudo.task_id.timesheet_ids._mark_timesheets_reported()
         if worksheet_sudo.task_id.sale_order_id.use_costed_report:
             pdf = request.env.ref('sale.action_report_pro_forma_invoice').sudo()._render_qweb_pdf([worksheet_sudo.task_id.sale_order_id.id])[0]
             worksheet_sudo.task_id.message_post(body=_('The costed report has been generated'), attachments=[('%s - %d.pdf' % (worksheet_sudo.task_id.sale_order_id.name, worksheet_sudo.id), pdf)])
+        worksheet_sudo.task_id.sale_line_id._update_qty_reported()
+        worksheet_sudo.task_id.timesheet_ids._mark_timesheets_reported()
         return response
