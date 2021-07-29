@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="sale_order_form_spence_costed_report" model="ir.ui.view">
+            <field name="name">Spence: Add Use Costed Report field</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='sale_info']" position="inside">
+                    <field name="use_costed_report"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='qty_delivered']" position="after">
+                    <field name="qty_unreported" string="Unreported" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+</odoo>
