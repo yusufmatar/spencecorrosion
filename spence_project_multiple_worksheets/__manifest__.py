@@ -21,7 +21,7 @@ Task ID: 2585433
     'license': 'OEEL-1',
 
     # any module necessary for this one to work correctly
-    'depends': ['industry_fsm_report','sale'],
+    'depends': ['industry_fsm_report','sale_project'],
 
     # always loaded
     'data': [
