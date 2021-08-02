@@ -35,8 +35,9 @@ class MetaWorksheet(models.Model):
     date_performed = fields.Date(string="Date Performed", default=fields.Date.context_today)
     date_signed = fields.Date(string="Date Signed", readonly=True)
     fsm_is_sent = fields.Boolean(string="Sent", default=False, readonly=True)
-    report_attachment = fields.Binary('Report', help='Final PDF Report', copy=False, attachment=True, readonly=True)
-
+    report_attachment_id = fields.Many2one(string='Report Attachment', comodel_name='ir.attachment', help='Final PDF Report', copy=False, attachment=True, readonly=True)
+    report_attachment = fields.Binary("Report", related="report_attachment_id.datas")
+    
     def _get_worksheet(self):
         self.ensure_one()
         return self.env[self.worksheet_template_id.model_id.model].search([('x_worksheet_id', '=', self.id)])
@@ -63,7 +64,8 @@ class MetaWorksheet(models.Model):
         if not self.worksheet_template_id:
             raise UserError(_("To send the report, you need to select a worksheet template."))
 
-        template_id = self.env.ref('spence_project_multiple_worksheets.mail_template_data_send_report').id
+        template = self.env.ref('spence_project_multiple_worksheets.mail_template_data_send_report')
+        template.attachment_ids = [(6,0, [self.report_attachment_id.id])]
         return {
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
@@ -74,8 +76,8 @@ class MetaWorksheet(models.Model):
             'context': {
                 'default_model': 'project.task.worksheet.meta',
                 'default_res_id': self.id,
-                'default_use_template': bool(template_id),
-                'default_template_id': template_id,
+                'default_use_template': bool(template),
+                'default_template_id': template.id,
                 'force_email': True,
                 'fsm_mark_as_sent': True,
             },
