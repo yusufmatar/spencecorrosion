@@ -10,5 +10,4 @@ class AccountAnalyticLine(models.Model):
     reported = fields.Boolean("Reported", default=False, readonly=True)
 
     def _mark_timesheets_reported(self):
-        for sheet in self:
-            sheet.reported = True
+        self.reported = True
