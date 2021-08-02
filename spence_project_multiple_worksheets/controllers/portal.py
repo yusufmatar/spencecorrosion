@@ -53,9 +53,16 @@ class CustomerPortal(CustomerPortal):
             return {'error': _('Invalid signature data.')}
 
         pdf = request.env.ref('spence_project_multiple_worksheets.task_custom_report').sudo()._render_qweb_pdf([worksheet_sudo.id])[0]
-        worksheet_sudo.task_id.message_post(body=_('The worksheet has been signed'), attachments=[('%s - %d.pdf' % (worksheet_sudo.name, worksheet_sudo.id), pdf)])
-        worksheet_sudo.report_attachment = base64.encodebytes(pdf)
-
+        filename = f"Worksheet {worksheet_sudo.name}{(' - ' + worksheet_sudo.partner_id.name) if worksheet_sudo.partner_id else ''} - {worksheet_sudo.id}.pdf"
+        worksheet_sudo.task_id.message_post(body=_('The worksheet has been signed'), attachments=[(filename, pdf)])
+        worksheet_sudo.report_attachment_id = request.env['ir.attachment'].create({
+                    'name': filename,
+                    'res_id': worksheet_sudo.id,
+                    'res_model': 'project.task.worksheet.meta',
+                    'datas': base64.encodebytes(pdf),
+                    'type': 'binary',
+                    'mimetype': 'application/pdf'
+                }).id
         query_string = '&message=sign_ok'
         return {
             'force_refresh': True,
