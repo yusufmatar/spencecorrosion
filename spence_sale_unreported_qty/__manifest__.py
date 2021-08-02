@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Spence Corrosion: Daily Worksheets",
+    'name': "Spence Corrosion: Unreported Lines",
 
-    'summary': """Only show new stuff from sale order on worksheet reports""",
+    'summary': """Add a new Unreported Qty to sale order line""",
 
     'description': """
 Spence Corrosion: Daily Worksheets
 ==================================
-Worksheets reports will only display new/updated line items on the worksheet report
-compared to when the last report was created, usually daily.
+We add a new field on sale order lines that resets to zero whenever
+a report is generated. Same thing for timesheets.
 
 Task ID: 2603796
     """,
