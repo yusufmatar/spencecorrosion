@@ -5,7 +5,7 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
+            <xpath expr="//notebook/page[1]" position="before">
                 <page string="Worksheets" attrs="{'invisible':[('allow_worksheets','=',False)]}">
                     <field name="worksheet_ids" />
                     <button name="action_fsm_worksheet" 
