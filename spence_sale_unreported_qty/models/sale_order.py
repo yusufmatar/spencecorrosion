@@ -13,7 +13,7 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     qty_reported = fields.Float("Reported Quantity", default=0, copy=False, digits='Product Unit of Measure')
-    qty_unreported = fields.Float("Unreported Quantity", default=0, store=True, copy=False, readonly=False, 
+    qty_unreported = fields.Float("Unreported Quantity", store=True, copy=False, readonly=False, 
                                     compute="_compute_qty_unreported", inverse="_compute_qty_reported",
                                     digits='Product Unit of Measure', )
 
