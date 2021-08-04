@@ -15,10 +15,11 @@
                 <attribute name="readonly">0</attribute>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
+                <field name="subtask_count" invisible="1"/>
                 <field name="predecessor" invisible="1"/>
-                <field name="date_start" force_save="1"/>
-                <field name="date_end"/>
-                <field name="duration"/>
+                <field name="date_start" force_save="1" attrs="{'readonly': [('subtask_count','>',0)], 'invisible': [('subtask_count','>',0)]}"/>
+                <field name="date_end" attrs="{'invisible': [('subtask_count','>',0)]}"/>
+                <field name="duration" attrs="{'invisible': [('subtask_count','>',0)]}"/>
             </xpath>
         </field>
     </record>
