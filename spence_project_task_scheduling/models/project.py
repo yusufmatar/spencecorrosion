@@ -16,21 +16,24 @@ class Task(models.Model):
     duration = fields.Integer("Duration in Days", default=1)
     predecessor = fields.Many2one('project.task', string="Predecessor", compute="_compute_siblings", store=True)
 
-    @api.depends('predecessor.date_start','predecessor.duration')
+    @api.depends('predecessor.date_start','predecessor.duration','subtask_count')
     def _compute_date_start(self):
-        for task in self.filtered(lambda t: t.predecessor):
-            task.date_start = task.predecessor.date_start + timedelta(days=task.predecessor.duration)
+        for task in self:
+            task.date_start = task.predecessor.date_start + timedelta(days=task.predecessor.duration) if ((not task.subtask_count) and task.predecessor and task.predecessor.date_start) else False
 
-    @api.depends("date_start", "duration")
+    @api.depends("date_start", "duration",'subtask_count')
     def _compute_end_date(self):
         for task in self:
-            task.date_end = task.date_start + timedelta(days=task.duration, seconds=-1)
+            task.date_end = task.date_start + timedelta(days=task.duration, seconds=-1) if (not task.subtask_count and task.date_start) else False
 
-    @api.depends("sequence","predecessor.sequence")
+    @api.depends("sequence","predecessor.sequence","predecessor.predecessor","subtask_count")
     def _compute_siblings(self):
         for task in self:
-            earlier_tasks = task.project_id.tasks.filtered(lambda t: t.sequence < task.sequence).sorted('sequence') # For some reason it wasn't automatically being sorted so we explcitly sort here
-            task.predecessor = earlier_tasks[-1] if earlier_tasks else None
+            if (task.subtask_count):
+                task.predecessor = False
+            else:
+                earlier_tasks = task.project_id.tasks.filtered(lambda t: t.sequence < task.sequence and not t.subtask_count).sorted('sequence') # For some reason it wasn't automatically being sorted so we explcitly sort here
+                task.predecessor = earlier_tasks[-1] if earlier_tasks else None
 
     # I'm not sure why but even though we have editable = 'bottom' on the list view,
     # it doesn't properly compute the sequence number.
