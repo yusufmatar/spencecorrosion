@@ -20,7 +20,8 @@ class CustomerPortal(CustomerPortal):
         # Create pro-forma pdf if needed
         if worksheet_sudo.task_id.sale_order_id.use_costed_report:
             pdf = request.env.ref('sale.action_report_pro_forma_invoice').sudo()._render_qweb_pdf([worksheet_sudo.task_id.sale_order_id.id])[0]
-            worksheet_sudo.task_id.sale_order_id.message_post(body=_('The costed report has been generated'), attachments=[('%s - %d.pdf' % (worksheet_sudo.task_id.sale_order_id.name, worksheet_sudo.id), pdf)])
+            filename = f"Costed LEM{' - ' + worksheet_sudo.sale_order_id.name if worksheet_sudo.sale_order_id else ''} - {worksheet_sudo.name} - {worksheet_sudo.date_performed.strftime('%d-%m-%Y')} - {worksheet_sudo.id}.pdf"
+            worksheet_sudo.task_id.sale_order_id.message_post(body=_('The costed report has been generated'), attachments=[(filename, pdf)])
         # Update sale order lines and timesheet lines
         worksheet_sudo.task_id.sale_order_id.order_line._update_qty_reported()
         worksheet_sudo.task_id.timesheet_ids._mark_timesheets_reported()
