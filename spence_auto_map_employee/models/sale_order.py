@@ -9,15 +9,16 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         res = super().action_confirm()
-        if self.project_ids:
-            self.project_id = self.project_ids[0]
-        if any(self.mapped('order_line.product_id.is_labour')):
-            self.project_id.pricing_type = 'employee_rate'
-        EmployeeMap = self.env['project.sale.line.employee.map']
-        for line in self.order_line.filtered(lambda l: l.product_id.is_labour):
-            EmployeeMap.create({
-                'project_id': self.project_id.id,
-                'sale_line_id': line.id,
-                'employee_id': line.product_id.labourer_title_id.id,
-            })
+        for sale in self:
+            if sale.project_ids:
+                sale.project_id = sale.project_ids[0]
+            if any(sale.mapped('order_line.product_id.is_labour')):
+                sale.project_id.pricing_type = 'employee_rate'
+                EmployeeMap = sale.env['project.sale.line.employee.map']
+                for line in sale.order_line.filtered(lambda l: l.product_id.is_labour):
+                    EmployeeMap.create({
+                        'project_id': sale.project_id.id,
+                        'sale_line_id': line.id,
+                        'employee_id': line.product_id.labourer_title_id.id,
+                    })
         return res
