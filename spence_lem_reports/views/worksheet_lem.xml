@@ -11,20 +11,18 @@
                 <field name="state" invisible="1"/>
                 <field name="date_performed" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
                 <field name="customer_signature_date"/>
-                <!-- <field name="customer_signature_name"/> -->
           </tree>
         </field>
     </record>
-    <!-- Form view
-         Shows the metadata for the sheet. But most importantly, it shows the preview of the final pdf report at the bottom.
-    -->
+    
+    <!-- Form view -->
     <record id="spence_lem_form" model="ir.ui.view">
         <field name="name">Spence: LEM Form</field>
         <field name="model">worksheet.lem</field>
         <field name="arch" type="xml">
             <form string="LEM">
                 <header>
-                    <button name="button_employee_sign" string="Validate" type="object" class="btn btn-primary float-right" attrs="{'invisible':[('state','in', ['completed','sent','signed'])]}" />
+                    <button name="button_employee_sign" string="Validate" type="object" class="btn btn-primary float-right" attrs="{'invisible':['|',('state','in', ['completed','sent','signed']),('task_id','=',False)]}" />
                     <button name="button_send_report" string="Send by Mail" type="object" class="btn btn-secondary float-right" attrs="{'invisible':['|',('state','=', 'draft'),('partner_id','=',False)]}" />
                     <field name="state" widget="statusbar"/>
                 </header>

@@ -7,16 +7,15 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook/page[1]" position="before">
                 <page string="LEM Sheets">
-                    <field name="lem_ids" force_save="1">
+                    <field name="lem_ids">
                         <tree>
                             <control>
                                 <create name="add_lem_control" string="New Sheet"/>
                             </control>
                             <field name="id"/>
-                            <field name="state" invisible="0"/>
+                            <field name="state"/>
                             <field name="date_performed" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
                             <field name="customer_signature_date"/>
-                            <field name="customer_signature_name"/>
                         </tree>
                     </field>
                 </page>
@@ -33,20 +32,4 @@
             <p>Find here your tasks planned for the following days.</p>
         </field>
     </record>
-
-    <!-- Worksheet buttons on the task are no longer relevant since we spun that data off into a new model. -->
-    <!-- <record id="view_task_form2_inherit_remove_buttons" model="ir.ui.view">
-        <field name="name">Spence: Remove Default Worksheet Buttons</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="industry_fsm_report.view_task_form2_inherit"/>
-        <field name="arch" type="xml">
-            <xpath expr="//div[@name='button_box']/button[@name='action_fsm_worksheet' and @icon='fa-pencil']" position="replace"/>
-            <xpath expr="//div[@name='button_box']/button[@name='action_fsm_worksheet' and @icon='fa-check']" position="replace"/>
-            <xpath expr="//header/button[@name='action_preview_worksheet' and hasclass('btn-primary')]" position="replace"/>
-            <xpath expr="//header/button[@name='action_preview_worksheet' and hasclass('btn-secondary')]" position="replace"/>
-            <xpath expr="//div[@name='button_box']/button[@name='action_preview_worksheet']" position="replace"/>
-            <xpath expr="//header/button[@name='action_send_report' and hasclass('btn-primary')]" position="replace"/>
-            <xpath expr="//header/button[@name='action_send_report' and hasclass('btn-secondary')]" position="replace"/>
-        </field>
-    </record> -->
 </odoo>

@@ -4,7 +4,7 @@
 from odoo import api, fields, models, _
 from datetime import datetime
 
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 class LEM(models.Model):
     _name = 'worksheet.lem'
@@ -23,10 +23,12 @@ class LEM(models.Model):
     sale_order_id = fields.Many2one(related='task_id.sale_order_id', store=True)
     
     # LEM Fields
-    date_performed = fields.Date(string='Date Performed', default=fields.Date.context_today)
+    date_performed = fields.Date(string='Date Performed', required=True, default=fields.Date.context_today)
     shift_type = fields.Selection(string='Shift Type', required=True, default='day', selection=[('day','Day'),('night','Night')])
-    loa = fields.Integer(string='LOA')
-    accommodations = fields.Integer(string='Accommodations')
+    # Note: LOA and Accommodations are actually Integers but the client 
+    # wants the user to have to explictly type in 0 if that is the case.
+    loa = fields.Char(string='LOA', required=True)
+    accommodations = fields.Char(string='Accommodations', required=True)
     note = fields.Text(string='Comments')
 
     # Employee Signature
@@ -53,7 +55,29 @@ class LEM(models.Model):
         self.state = 'completed'
         self.employee_signature_date = datetime.today()
         self.employee_id = self.env.user.partner_id
+
+        # # Increment accomodation and loa line items
+        try:
+            loa_lines = self.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'loa')
+            if loa_lines:
+                loa_lines[0].qty_delivered += int(self.loa)
+            accommodation_lines = self.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'accommodations')
+            if accommodation_lines:
+                accommodation_lines[0].qty_delivered += int(self.accommodations)
+        except:
+            raise ValidationError('LoA and Accommodations must be numbers!')
         return True
+
+    @api.constrains('loa','accommodations')
+    def _constrain_loa_accommodations(self):
+        for lem in self:
+            try:
+                int(lem.loa)
+                int(lem.accommodations)
+            except:
+                raise ValidationError('LoA and Accommodations must be numbers!')
+        return True
+
 
     def button_go_to_portal(self):
         self.ensure_one()
@@ -98,7 +122,7 @@ class LEM(models.Model):
 
     def _get_report_base_filename(self):
         self.ensure_one()
-        return f"LEM{' - ' + self.sale_order_id.name if self.sale_order_id else ''} - {self.name} - {self.date_performed.strftime('%d-%m-%Y')} - {self.id}.pdf"
+        return f"LEM{' - ' + self.sale_order_id.name if self.sale_order_id else ''} - {self.name} - {self.date_performed.strftime('%d-%m-%Y')} - {self.id}"
     
     def _message_post_after_hook(self, message, *args, **kwargs):
         if self.env.context.get('lem_mark_as_sent') and self.state != 'signed':
