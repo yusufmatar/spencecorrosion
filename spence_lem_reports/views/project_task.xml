@@ -1,25 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="project_task_form_worksheet_meta" model="ir.ui.view">
-        <field name="name">Spence: Task Form, Show Worksheets</field>
+    <record id="spence_task_lem_page" model="ir.ui.view">
+        <field name="name">Spence: Task Form, Show LEMS</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook/page[1]" position="before">
-                <page string="Worksheets" attrs="{'invisible':[('allow_worksheets','=',False)]}">
-                    <field name="worksheet_ids" />
-                    <button name="action_fsm_worksheet" 
-                        string="New Worksheet" 
-                        type="object" 
-                        class="btn btn-primary float-right"
-                    />
+                <page string="LEM Sheets">
+                    <field name="lem_ids" force_save="1">
+                        <tree>
+                            <control>
+                                <create name="add_lem_control" string="New Sheet"/>
+                            </control>
+                            <field name="id"/>
+                            <field name="state" invisible="0"/>
+                            <field name="date_performed" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                            <field name="customer_signature_date"/>
+                            <field name="customer_signature_name"/>
+                        </tree>
+                    </field>
                 </page>
             </xpath>
         </field>
     </record>
-    
+
+    <record id="spence_project_task_action" model="ir.actions.act_window">
+        <field name="name">My Tasks</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">map,kanban,gantt,calendar,tree,form,activity</field>
+        <field name="help" type="html">
+            <p class='o_view_nocontent_smiling_face'>No tasks found. Let's create one!</p>
+            <p>Find here your tasks planned for the following days.</p>
+        </field>
+    </record>
+
     <!-- Worksheet buttons on the task are no longer relevant since we spun that data off into a new model. -->
-    <record id="view_task_form2_inherit_remove_buttons" model="ir.ui.view">
+    <!-- <record id="view_task_form2_inherit_remove_buttons" model="ir.ui.view">
         <field name="name">Spence: Remove Default Worksheet Buttons</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="industry_fsm_report.view_task_form2_inherit"/>
@@ -32,5 +48,5 @@
             <xpath expr="//header/button[@name='action_send_report' and hasclass('btn-primary')]" position="replace"/>
             <xpath expr="//header/button[@name='action_send_report' and hasclass('btn-secondary')]" position="replace"/>
         </field>
-    </record>
+    </record> -->
 </odoo>

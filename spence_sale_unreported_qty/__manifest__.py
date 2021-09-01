@@ -21,11 +21,12 @@ Task ID: 2603796
     'license': 'OPL-1',
 
     # any module necessary for this one to work correctly
-    'depends': ['sale', 'spence_project_multiple_worksheets'],
+    'depends': ['spence_lem_reports'],
 
     # always loaded
     'data': [
-        'views/sale.xml'
+        'views/sale.xml',
+        'reports/lem.xml'
     ],
     'application': False,
 }

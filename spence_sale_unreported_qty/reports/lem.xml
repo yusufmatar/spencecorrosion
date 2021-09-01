@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="spence_lem_sheet_page_unreported_qty" inherit_id="spence_lem_reports.spence_lem_sheet_page">
+        <xpath expr="//t[@t-set='equipment_order_lines']" position="attributes">
+            <attribute name="t-value">doc.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'equipment' and l.qty_unreported > 0)</attribute>
+        </xpath>
+        <xpath expr="//t[@t-set='material_order_lines']" position="attributes">
+            <attribute name="t-value">doc.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'material' and l.qty_unreported > 0)</attribute>
+        </xpath>
+    </template>
+    <template id="spence_timesheet_table_unreported_qty" inherit_id="spence_lem_reports.spence_timesheet_table">
+        <xpath expr="//t[@t-foreach='doc.task_id.timesheet_ids']" position="attributes">
+            <attribute name="t-foreach">doc.task_id.timesheet_ids.filtered(lambda l: not l.reported)</attribute>
+        </xpath>
+    </template>
+</odoo>

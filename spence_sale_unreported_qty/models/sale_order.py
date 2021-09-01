@@ -4,11 +4,6 @@
 from odoo import api, fields, models
 
 
-class Sale(models.Model):
-    _inherit = 'sale.order'
-
-    use_costed_report = fields.Boolean("Use Costed Report", default=False)
-
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
