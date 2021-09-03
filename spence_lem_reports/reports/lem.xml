@@ -216,7 +216,7 @@
                         </td>
                         <td class="p-0" style="border: 0;"/>
                         <td class="p-0" style="border: 0;">
-                            <strong class="float-left"><span t-field="doc.customer_signature_name or doc.partner_id.name"/></strong>
+                            <strong class="float-left"><span t-field="doc.customer_signature_name"/></strong>
                             <span t-if="doc.customer_signature_date" class="float-right" t-field="doc.customer_signature_date"/>
                         </td>
                     </tr>

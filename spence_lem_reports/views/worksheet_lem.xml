@@ -48,7 +48,7 @@
                             <field name="accommodations" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
                         </group>
                         <group colspan="4">
-                            <field name="note" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                            <field name="note" string="Daily Summary" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
                         </group>
                         <group>
                             <label for="employee_signature"/>
