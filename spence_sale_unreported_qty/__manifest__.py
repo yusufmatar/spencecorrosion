@@ -26,7 +26,8 @@ Task ID: 2603796
     # always loaded
     'data': [
         'views/sale.xml',
-        'reports/lem.xml'
+        'reports/lem.xml',
+        'reports/costed_lem.xml'
     ],
     'application': False,
 }
