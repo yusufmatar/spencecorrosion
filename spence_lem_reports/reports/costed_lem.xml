@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <templates>
-        <t t-inherit="sale.report_saleorder_document" t-inherit-mode="extension">
-            
+    <template id="spence_costed_lem_report">
+        <t t-call="web.html_container">
+            <t t-set="is_pro_forma" t-value="True"/>
+            <t t-foreach="docs" t-as="lem">
+                <t t-set="doc" t-value="lem.sale_order_id"/>
+                <t t-call="spence_lem_reports.spence_costed_lem_report_document" t-lang="doc.partner_id.lang"/>
+            </t>
         </t>
-    </templates>
+    </template>
+
+    <template id="spence_costed_lem_report_document" inherit_id="sale.report_saleorder_document" primary="True">
+        <xpath expr="//h2" position="replace"/>
+        <xpath expr="//t[@t-set='address']" position="replace"/>
+
+        <xpath expr="//div[@id='informations']" position="replace">
+            <t t-call="spence_lem_reports.spence_info_table">
+                <t t-set="doc" t-value="lem"/>
+            </t>
+        </xpath>
+    </template>
 </odoo>

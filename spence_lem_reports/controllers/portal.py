@@ -48,7 +48,7 @@ class CustomerPortal(CustomerPortal):
             return {'error': _('Invalid signature data.')}
         # Create costed LEM if needed
         if lem_sudo.sale_order_id.use_costed_report:
-            pdf = request.env.ref('sale.action_report_pro_forma_invoice').sudo()._render_qweb_pdf([lem_sudo.sale_order_id.id])[0]
+            pdf = request.env.ref('spence_lem_reports.spence_costed_lem_sheet_pdf').sudo()._render_qweb_pdf([lem_sudo.id])[0]
             filename = f"Costed LEM{' - ' + lem_sudo.sale_order_id.name if lem_sudo.sale_order_id else ''} - {lem_sudo.name} - {lem_sudo.date_performed.strftime('%d-%m-%Y')} - {lem_sudo.id}"
             lem_sudo.sale_order_id.message_post(body=_('The costed report has been generated'), attachments=[(filename, pdf)])
         # Create normal LEM report

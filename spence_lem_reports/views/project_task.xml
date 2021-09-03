@@ -5,10 +5,14 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
+            <xpath expr="//header/*[1]" position="before">
+                <field name="has_draft_lems" invisible="1"/>
+                <button name="validate_lems" string="Validate LEM Sheets" type="object" class="btn btn-primary float-right" attrs="{'invisible':[('has_draft_lems','=',False)]}"/>
+            </xpath>
             <xpath expr="//notebook/page[1]" position="before">
                 <page string="LEM Sheets">
-                    <field name="lem_ids">
-                        <tree>
+                    <field name="lem_ids" context="{'default_task_id':id}">
+                        <tree delete="0">
                             <control>
                                 <create name="add_lem_control" string="New Sheet"/>
                             </control>

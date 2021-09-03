@@ -27,10 +27,9 @@
         'views/sale_order.xml',
         'views/product_template.xml',
         'reports/lem.xml',
+        'reports/costed_lem.xml',
         'reports/report_actions.xml',
         'reports/report_templates.xml'
     ],
-    # only loaded in demonstration mode
-    'demo': [],
     'application': False,
 }

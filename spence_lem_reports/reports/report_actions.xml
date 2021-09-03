@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        
         <record id="spence_lem_sheet_pdf" model="ir.actions.report">
-            <field name="name">Spence: LEM Report PDF</field>
+            <field name="name">Spence: LEM Report (PDF)</field>
             <field name="model">worksheet.lem</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">spence_lem_reports.spence_lem_sheet</field>
             <field name="report_file">spence_lem_reports.spence_lem_sheet</field>
             <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="binding_model_id" ref="model_worksheet_lem"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="spence_costed_lem_sheet_pdf" model="ir.actions.report">
+            <field name="name">Spence: Costed LEM Report (PDF)</field>
+            <field name="model">worksheet.lem</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">spence_lem_reports.spence_costed_lem_report</field>
+            <field name="report_file">spence_lem_reports.spence_costed_lem_report</field>
+            <field name="print_report_name">("Costed " + object._get_report_base_filename())</field>
             <field name="binding_model_id" ref="model_worksheet_lem"/>
             <field name="binding_type">report</field>
         </record>

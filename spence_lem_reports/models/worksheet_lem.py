@@ -32,7 +32,7 @@ class LEM(models.Model):
     note = fields.Text(string='Comments')
 
     # Employee Signature
-    employee_signature = fields.Binary('Employee Signature', copy=False, attachment=True)
+    employee_signature = fields.Binary('Employee Signature', required=True, copy=False, attachment=True)
     employee_id = fields.Many2one(string='Employee', comodel_name='res.partner', copy=False, readonly=True)
     employee_signature_date = fields.Date(string='Date Signed by Employee', copy=False, readonly=True)
 
@@ -48,35 +48,35 @@ class LEM(models.Model):
 
 
     # Buttons
-    def button_employee_sign(self):
-        self.ensure_one()
-        if not self.employee_signature:
-            raise UserError('You must first sign the worksheet!')
-        self.state = 'completed'
-        self.employee_signature_date = datetime.today()
-        self.employee_id = self.env.user.partner_id
-
-        # # Increment accomodation and loa line items
-        try:
-            loa_lines = self.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'loa')
-            if loa_lines:
-                loa_lines[0].qty_delivered += int(self.loa)
-            accommodation_lines = self.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'accommodations')
-            if accommodation_lines:
-                accommodation_lines[0].qty_delivered += int(self.accommodations)
-        except:
-            raise ValidationError('LoA and Accommodations must be numbers!')
-        return True
-
-    @api.constrains('loa','accommodations')
-    def _constrain_loa_accommodations(self):
+    def action_confirm(self):
         for lem in self:
+            if not lem.employee_signature:
+                raise UserError('You must first sign the worksheet!')
+            lem.state = 'completed'
+            lem.employee_signature_date = datetime.today()
+            lem.employee_id = lem.env.user.partner_id
+
+            # # Increment accomodation and loa line items
             try:
-                int(lem.loa)
-                int(lem.accommodations)
+                loa_lines = lem.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'loa')
+                if loa_lines:
+                    loa_lines[0].qty_delivered += int(lem.loa)
+                accommodation_lines = lem.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'accommodations')
+                if accommodation_lines:
+                    accommodation_lines[0].qty_delivered += int(lem.accommodations)
             except:
                 raise ValidationError('LoA and Accommodations must be numbers!')
         return True
+
+    # @api.constrains('loa','accommodations')
+    # def _constrain_loa_accommodations(self):
+    #     for lem in self:
+    #         try:
+    #             int(lem.loa)
+    #             int(lem.accommodations)
+    #         except:
+    #             raise ValidationError('LoA and Accommodations must be numbers!')
+    #     return True
 
 
     def button_go_to_portal(self):

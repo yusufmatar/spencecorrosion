@@ -5,7 +5,7 @@
         <field name="name">Spence: LEM Tree</field>
         <field name="model">worksheet.lem</field>
         <field name="arch" type="xml">
-            <tree create="0" edit="0">
+            <tree create="0" edit="0" delete="0">
                 <field name="id"/>
                 <field name="task_id" invisible="not context.get('from_sale_order', False)"/>
                 <field name="state" invisible="1"/>
@@ -22,7 +22,7 @@
         <field name="arch" type="xml">
             <form string="LEM">
                 <header>
-                    <button name="button_employee_sign" string="Validate" type="object" class="btn btn-primary float-right" attrs="{'invisible':['|',('state','in', ['completed','sent','signed']),('task_id','=',False)]}" />
+                    <!-- <button name="button_employee_sign" string="Validate" type="object" class="btn btn-primary float-right" attrs="{'invisible':[('state','in', ['completed','sent','signed'])]}" /> -->
                     <button name="button_send_report" string="Send by Mail" type="object" class="btn btn-secondary float-right" attrs="{'invisible':['|',('state','=', 'draft'),('partner_id','=',False)]}" />
                     <field name="state" widget="statusbar"/>
                 </header>
