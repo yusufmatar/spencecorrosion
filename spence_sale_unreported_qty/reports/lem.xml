@@ -8,6 +8,11 @@
             <attribute name="t-value">doc.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'material' and l.qty_unreported > 0)</attribute>
         </xpath>
     </template>
+    <template id="spence_equipment_material_table_unreported" inherit_id="spence_lem_reports.spence_equipment_material_table">
+        <xpath expr="//span[@t-field='line.product_uom_qty']" position="attributes">
+            <attribute name="t-field">line.qty_unreported</attribute>
+        </xpath>
+    </template>    
     <template id="spence_timesheet_table_unreported_qty" inherit_id="spence_lem_reports.spence_timesheet_table">
         <xpath expr="//t[@t-foreach='doc.task_id.timesheet_ids']" position="attributes">
             <attribute name="t-foreach">doc.task_id.timesheet_ids.filtered(lambda l: not l.reported)</attribute>
