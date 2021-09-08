@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="spence_task_lem_page" model="ir.ui.view">
+        <field name="name">Spence: Task Form, Show LEMS</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/*[1]" position="before">
+                <field name="has_draft_lems" invisible="1"/>
+                <button name="validate_lems" string="Validate LEM Sheets" type="object" class="btn btn-primary float-right" attrs="{'invisible':[('has_draft_lems','=',False)]}"/>
+            </xpath>
+            <xpath expr="//notebook/page[1]" position="before">
+                <page string="LEM Sheets">
+                    <field name="lem_ids" context="{'default_task_id':id}">
+                        <tree delete="0">
+                            <control>
+                                <create name="add_lem_control" string="New Sheet"/>
+                            </control>
+                            <field name="id"/>
+                            <field name="state"/>
+                            <field name="date_performed" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                            <field name="customer_signature_date"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="spence_project_task_action" model="ir.actions.act_window">
+        <field name="name">My Tasks</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">map,kanban,gantt,calendar,tree,form,activity</field>
+        <field name="help" type="html">
+            <p class='o_view_nocontent_smiling_face'>No tasks found. Let's create one!</p>
+            <p>Find here your tasks planned for the following days.</p>
+        </field>
+    </record>
+</odoo>

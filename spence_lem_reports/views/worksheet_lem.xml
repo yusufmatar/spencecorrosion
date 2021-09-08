@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree view -->
+    <record id="spence_lem_tree" model="ir.ui.view">
+        <field name="name">Spence: LEM Tree</field>
+        <field name="model">worksheet.lem</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="id"/>
+                <field name="task_id" invisible="not context.get('from_sale_order', False)"/>
+                <field name="state" invisible="1"/>
+                <field name="date_performed" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                <field name="customer_signature_date"/>
+          </tree>
+        </field>
+    </record>
+    
+    <!-- Form view -->
+    <record id="spence_lem_form" model="ir.ui.view">
+        <field name="name">Spence: LEM Form</field>
+        <field name="model">worksheet.lem</field>
+        <field name="arch" type="xml">
+            <form string="LEM">
+                <header>
+                    <!-- <button name="button_employee_sign" string="Validate" type="object" class="btn btn-primary float-right" attrs="{'invisible':[('state','in', ['completed','sent','signed'])]}" /> -->
+                    <button name="button_send_report" string="Send by Mail" type="object" class="btn btn-secondary float-right" attrs="{'invisible':['|',('state','=', 'draft'),('partner_id','=',False)]}" />
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="button_go_to_portal" type="object" class="oe_stat_button" icon="fa-globe icon" attrs="{'invisible':['|',('state','=', 'draft'),('partner_id','=',False)]}" >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Customer</span>
+                                <span class="o_stat_text">Preview</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="task_id" invisible="1"/>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="name" string="Task" readonly="1" attrs="{'invisible':[('task_id','=',False)]}"/>
+                            <field name="shift_type" widget="radio" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                        </group>
+                        <group>
+                            <field name="date_performed" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                            <field name="loa" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                            <field name="accommodations" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                        </group>
+                        <group colspan="4">
+                            <field name="note" string="Daily Summary" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                        </group>
+                        <group>
+                            <label for="employee_signature"/>
+                            <div>
+                                <field name="employee_signature" widget="signature" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                                <field name="employee_id" nolabel="1" attrs="{'invisible':[('state','=', 'draft')]}"/><br/>
+                                <field name="employee_signature_date" nolabel="1" attrs="{'invisible':[('state','=', 'draft')]}"/>
+                            </div>
+                        </group>
+                        <group attrs="{'invisible':[('customer_signature','=', False)]}" >
+                            <label for="customer_signature"/>
+                            <div>
+                                <field name="customer_signature" widget="signature"/>
+                                <field name="customer_signature_name" nolabel="1"/><br/>
+                                <field name="customer_signature_date" nolabel="1"/>
+                            </div>
+                        </group>
+                        <group colspan="4" attrs="{'invisible':[('report_attachment','=', False)]}">
+                            <field name="report_attachment" widget="pdf_viewer" nolabel="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

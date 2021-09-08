@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="spence_lem_sheet" name="Spence: LEM Sheets">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <t t-set="hide_footer" t-value="True"/>
+                    <t t-call="spence_lem_reports.spence_lem_sheet_page" t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="spence_lem_sheet_page" name="Spence: LEM Sheet, Page">
+        <div class="page">
+            <div class="container-fluid">
+                <!-- Header -->
+                <div class="row p-1"><div class="col-12 text-center">
+                    <h1>Daily L.E.M. Sheet</h1>
+                </div></div>
+                <!-- Primary Info Block -->
+                <div class="row p-1"><div class="col-12">
+                    <t t-call="spence_lem_reports.spence_info_table"/>
+                </div></div>
+                <!-- Timesheets -->
+                <div class="row p-1"><div class="col-12">
+                    <t t-if="doc.task_id.allow_timesheets and doc.task_id.timesheet_ids">
+                        <h3>Timesheets</h3>
+                        <t t-call="spence_lem_reports.spence_timesheet_table"/>
+                    </t>
+                </div></div>
+                <!-- Equipment and Materials -->
+                <div class="row p-1">
+                    <t t-set="equipment_order_lines" t-value="doc.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'equipment')"/>
+                    <div class="col-6">
+                        <t t-if="equipment_order_lines">
+                            <h3>Equipment</h3>
+                            <t t-call="spence_lem_reports.spence_equipment_material_table">
+                                <t t-set="order_lines" t-value="equipment_order_lines"/>
+                            </t>
+                        </t>
+                    </div>
+                    <t t-set="material_order_lines" t-value="doc.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'material')"/>
+                    <div class="col-6">
+                        <t t-if="material_order_lines">
+                            <h3>Material</h3>
+                            <t t-call="spence_lem_reports.spence_equipment_material_table">
+                                <t t-set="order_lines" t-value="material_order_lines"/>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+                <!-- Daily Summary -->
+                <div class="row p-1">
+                    <div class="col-12">
+                        <h3>Daily Summary</h3>
+                        <t t-call="spence_lem_reports.spence_summary_table"/>
+                    </div>
+                </div>
+                <!-- Signatures -->
+                <div class="row p-1">
+                    <div class="col-12">
+                        <t t-call="spence_lem_reports.spence_signature_table"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>
