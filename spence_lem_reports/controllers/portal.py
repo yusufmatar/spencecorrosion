@@ -35,7 +35,7 @@ class CustomerPortal(CustomerPortal):
             return {'error': _('The worksheet is not in a state requiring customer signature.')}
         if not signature:
             return {'error': _('Signature is missing.')}
-
+        # Write signature related fields
         try:
             lem_sudo.write({
                 'customer_signature': signature,

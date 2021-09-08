@@ -6,10 +6,11 @@ from odoo import api, fields, models
 
 class Task(models.Model):
     _inherit = 'project.task'
+    
+    lem_ids = fields.One2many(comodel_name='worksheet.lem', inverse_name='task_id', string='LEM Sheets')
+    has_draft_lems = fields.Boolean(string="Has Unconfirmed LEMs", compute="_compute_has_draft_lems")
 
-    has_draft_lems = fields.Boolean(string="Has Unconfirmed LEMs", compute="_compute_draft_lems")
-
-    def _compute_draft_lems(self):
+    def _compute_has_draft_lems(self):
         for task in self:
             task.has_draft_lems = any(task.lem_ids.mapped(lambda l: l.state == 'draft'))
 

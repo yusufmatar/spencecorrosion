@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_lem_spence" name="Spence: LEM Portal" inherit_id="industry_fsm_report.portal_my_worksheet" primary="True">
+        <!-- URL and other meta stuff -->
+        <xpath expr="//t[@t-set='backend_url']" position="attributes">
+            <attribute name="t-value">'/web#model=project.task&amp;id=%s&amp;action=%s&amp;view_type=form' % (lem.task_id.id, source_action_id)</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="attributes">
+            <attribute name="id">o_spence_lem_worksheet_portal</attribute>
+        </xpath>
+        <xpath expr="//t[@t-set='source_action_id']" position="attributes">
+            <attribute name="t-value">lem.env.ref('spence_lem_reports.spence_project_task_action').id</attribute>
+        </xpath>
+
+        <!-- Sidebar buttons -->
+        <xpath expr="//div[hasclass('o_download_pdf')]" position="replace">
+            <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
+                <div class="btn-group flex-grow-1 mr-1 mb-1">
+                    <a class="btn btn-secondary btn-block o_download_btn" t-att-href="task.get_portal_url(suffix='/lem', report_type='pdf', download=True)" title="Download">
+                        <i class="fa fa-download"/>
+                        Download
+                    </a>
+                </div>
+                <div class="btn-group flex-grow-1 mb-1">
+                    <a class="btn btn-secondary btn-block o_print_btn o_portal_invoice_print" t-att-href="task.get_portal_url(suffix='/lem', report_type='pdf')" title="Print" target="_blank">
+                        <i class="fa fa-print"/>
+                        Print
+                    </a>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Signature stuff -->
+        <xpath expr="//h4[@class='modal-title']" position="replace">
+            <h4 class="modal-title">Sign LEM Sheet</h4>
+        </xpath>
+        <xpath expr="//t[@t-set='call_url']" position="attributes">
+            <attribute name="t-value">task.get_portal_url(suffix='/sign/%s' % source)</attribute>
+        </xpath>
+        <xpath expr="//div[@role='status']" position="replace">
+            <div t-if="message == 'sign_ok'" class="alert alert-success alert-dismissable d-print-none text-center mt-2" role="status">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">×</button>
+                <strong>Thank You!</strong>
+                <br/>
+                Your LEM Sheet is now signed.
+            </div>
+        </xpath>
+
+        <!-- The actual report content -->
+        <xpath expr="//div[@id='worksheet_content']" position="replace">
+            <div t-attf-class="card p-3" name="Content" id="worksheet_content">
+                <t t-set="doc" t-value="lem"/>
+                <div t-call="spence_lem_reports.spence_lem_sheet_page"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

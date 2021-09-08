@@ -20,6 +20,7 @@ class LEM(models.Model):
     task_id = fields.Many2one(comodel_name='project.task', required=True, readonly=True, ondelete='cascade', index=True)
     name = fields.Char(string='Task', related='task_id.name')
     user_id = fields.Many2one(related='task_id.user_id')
+    partner_id = fields.Many2one(related='task_id.partner_id')
     sale_order_id = fields.Many2one(related='task_id.sale_order_id', store=True)
     
     # LEM Fields
@@ -37,7 +38,6 @@ class LEM(models.Model):
     employee_signature_date = fields.Date(string='Date Signed by Employee', copy=False, readonly=True)
 
     # Customer Signature
-    partner_id = fields.Many2one(related='task_id.partner_id')
     customer_signature = fields.Binary('Customer Signature', help='Signature received through the portal.', copy=False, attachment=True, readonly=True)
     customer_signature_name = fields.Char('Customer Name', help='Name of the person who signed the task.', copy=False, readonly=True)
     customer_signature_date = fields.Date(string='Date Signed by Customer', copy=False, readonly=True)
@@ -55,8 +55,7 @@ class LEM(models.Model):
             lem.state = 'completed'
             lem.employee_signature_date = datetime.today()
             lem.employee_id = lem.env.user.partner_id
-
-            # # Increment accomodation and loa line items
+            # Increment accomodation and loa line items
             try:
                 loa_lines = lem.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'loa')
                 if loa_lines:
@@ -67,16 +66,6 @@ class LEM(models.Model):
             except:
                 raise ValidationError('LoA and Accommodations must be numbers!')
         return True
-
-    # @api.constrains('loa','accommodations')
-    # def _constrain_loa_accommodations(self):
-    #     for lem in self:
-    #         try:
-    #             int(lem.loa)
-    #             int(lem.accommodations)
-    #         except:
-    #             raise ValidationError('LoA and Accommodations must be numbers!')
-    #     return True
 
 
     def button_go_to_portal(self):
@@ -95,6 +84,11 @@ class LEM(models.Model):
 
     def button_send_report(self):
         self.ensure_one()
+        # If LEM already has an attachment, include it in the email template. 
+        # Else, generate a new one. We don't just always generate a new report
+        # because it depends on the current state of the sale order, which might
+        # be changed between the generation of the original report and the time
+        # the email template is used.
         if self.report_attachment_id:
             template = self.env.ref('spence_lem_reports.spence_lem_email_template_signed')
             template.attachment_ids = [(6,0, [self.report_attachment_id.id])]
@@ -127,8 +121,3 @@ class LEM(models.Model):
     def _message_post_after_hook(self, message, *args, **kwargs):
         if self.env.context.get('lem_mark_as_sent') and self.state != 'signed':
             self.write({'state': 'sent'})
-
-class Task(models.Model):
-    _inherit = 'project.task'
-
-    lem_ids = fields.One2many(comodel_name='worksheet.lem', inverse_name='task_id', string='LEM Sheets')

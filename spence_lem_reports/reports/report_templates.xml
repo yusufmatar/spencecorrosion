@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Add an option to the four external layouts to hide the footer. -->
     <template id="external_layout_standard" inherit_id="web.external_layout_standard" >
         <div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout" position="attributes">
             <attribute name="t-if">not hide_footer</attribute>

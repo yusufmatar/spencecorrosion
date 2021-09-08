@@ -26,6 +26,8 @@
         'views/project_task.xml',
         'views/sale_order.xml',
         'views/product_template.xml',
+        'views/portal.xml',
+        'reports/lem_report_components.xml',
         'reports/lem.xml',
         'reports/costed_lem.xml',
         'reports/report_actions.xml',

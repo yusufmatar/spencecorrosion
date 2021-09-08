@@ -1,55 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-<template id="portal_my_lem_spence" name="Spence: LEM Portal" inherit_id="industry_fsm_report.portal_my_worksheet" primary="True">
-    <xpath expr="//t[@t-set='backend_url']" position="attributes">
-        <attribute name="t-value">'/web#model=project.task&amp;id=%s&amp;action=%s&amp;view_type=form' % (lem.task_id.id, source_action_id)</attribute>
-    </xpath>
-    <xpath expr="//div[hasclass('o_portal_sidebar')]" position="attributes">
-        <attribute name="id">o_spence_lem_worksheet_portal</attribute>
-    </xpath>
-    <xpath expr="//t[@t-set='source_action_id']" position="attributes">
-        <attribute name="t-value">lem.env.ref('spence_lem_reports.spence_project_task_action').id</attribute>
-    </xpath>
-
-    <xpath expr="//div[hasclass('o_download_pdf')]" position="replace">
-        <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
-            <div class="btn-group flex-grow-1 mr-1 mb-1">
-                <a class="btn btn-secondary btn-block o_download_btn" t-att-href="task.get_portal_url(suffix='/lem', report_type='pdf', download=True)" title="Download">
-                    <i class="fa fa-download"/>
-                    Download
-                </a>
-            </div>
-            <div class="btn-group flex-grow-1 mb-1">
-                <a class="btn btn-secondary btn-block o_print_btn o_portal_invoice_print" t-att-href="task.get_portal_url(suffix='/lem', report_type='pdf')" title="Print" target="_blank">
-                    <i class="fa fa-print"/>
-                    Print
-                </a>
-            </div>
-        </div>
-    </xpath>
-
-    <xpath expr="//h4[@class='modal-title']" position="replace">
-        <h4 class="modal-title">Sign LEM Sheet</h4>
-    </xpath>
-    <xpath expr="//t[@t-set='call_url']" position="attributes">
-        <attribute name="t-value">task.get_portal_url(suffix='/sign/%s' % source)</attribute>
-    </xpath>
-    <xpath expr="//div[@role='status']" position="replace">
-        <div t-if="message == 'sign_ok'" class="alert alert-success alert-dismissable d-print-none text-center mt-2" role="status">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">×</button>
-            <strong>Thank You!</strong><br/>
-            Your LEM Sheet is now signed.
-        </div>
-    </xpath>
-    <xpath expr="//div[@id='worksheet_content']" position="replace">
-        <div t-attf-class="card p-3" name="Content" id="worksheet_content">
-            <t t-set="doc" t-value="lem"/>
-            <div t-call="spence_lem_reports.spence_lem_sheet_page"/>
-        </div>    
-    </xpath>
-</template>
-    
     <template id="spence_lem_sheet" name="Spence: LEM Sheets">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
@@ -64,18 +14,22 @@
     <template id="spence_lem_sheet_page" name="Spence: LEM Sheet, Page">
         <div class="page">
             <div class="container-fluid">
+                <!-- Header -->
                 <div class="row p-1"><div class="col-12 text-center">
                     <h1>Daily L.E.M. Sheet</h1>
                 </div></div>
+                <!-- Primary Info Block -->
                 <div class="row p-1"><div class="col-12">
-                        <t t-call="spence_lem_reports.spence_info_table"/>
+                    <t t-call="spence_lem_reports.spence_info_table"/>
                 </div></div>
+                <!-- Timesheets -->
                 <div class="row p-1"><div class="col-12">
                     <t t-if="doc.task_id.allow_timesheets and doc.task_id.timesheet_ids">
                         <h3>Timesheets</h3>
                         <t t-call="spence_lem_reports.spence_timesheet_table"/>
                     </t>
                 </div></div>
+                <!-- Equipment and Materials -->
                 <div class="row p-1">
                     <t t-set="equipment_order_lines" t-value="doc.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'equipment')"/>
                     <div class="col-6">
@@ -96,141 +50,20 @@
                         </t>
                     </div>
                 </div>
+                <!-- Daily Summary -->
                 <div class="row p-1">
                     <div class="col-12">
                         <h3>Daily Summary</h3>
                         <t t-call="spence_lem_reports.spence_summary_table"/>
                     </div>
                 </div>
+                <!-- Signatures -->
                 <div class="row p-1">
                     <div class="col-12">
                         <t t-call="spence_lem_reports.spence_signature_table"/>
                     </div>
                 </div>
             </div>
-        </div>
-    </template>
-
-    <template id="spence_equipment_material_table">
-        <div class="table-responsive-sm" >
-            <table class="table table-sm o_main_table">
-                <thead><tr>
-                    <th class="text-left">Description</th>
-                    <th class="text-center" style="width: 25%">Quantity</th>
-                </tr></thead>
-                <tbody class="sale_tbody">
-                    <t t-foreach="order_lines" t-as="line"><tr>
-                        <td class="text-left"><span t-field="line.name"/></td>
-                        <td class="text-center"><span t-field="line.product_uom_qty"/></td>
-                    </tr></t>
-                </tbody>
-            </table>
-        </div>
-    </template>
-    
-    <template id="spence_timesheet_table">
-        <div class="table-responsive-sm">
-            <table class="table table-sm o_main_table">
-                <thead><tr>
-                    <th class="text-left" style="width: 15%">Date</th>
-                    <th class="text-left" style="width: 25%">Employee</th>
-                    <th class="text-left">Description</th>
-                    <th class="text-left" style="width: 15%">Time Spent</th>
-                </tr></thead>
-                <tbody class="sale_tbody">
-                    <t t-foreach="doc.task_id.timesheet_ids" t-as="line"><tr>
-                        <td class="text-left"><span t-field="line.date"/></td>
-                        <td class="text-left"><span t-field="line.employee_id.name"/></td>
-                        <td class="text-left"><span t-field="line.display_name"/></td>
-                        <td class="text-left">
-                            <span t-field="line.unit_amount" t-options="{'widget': 'float_time'}"/><span> hour(s)</span>
-                        </td>
-                    </tr></t>
-                </tbody>
-            </table>
-        </div>
-    </template>
-
-    <template id="spence_info_table">
-        <div class="table-responsive-sm">
-            <table class="table table-sm table-bordered o_main_table">
-                <tbody>
-                    <tr>
-                        <td style="border: 1px solid #616161;"><strong class="float-left">Client: </strong><span class="float-right" t-field="doc.partner_id.name"/></td>
-                        <td style="border: 1px solid #616161;"><strong class="float-left">Asset: </strong><span class="float-right" t-field="doc.sale_order_id.asset_id"/></td>
-                        <td style="border: 1px solid #616161;"><strong class="float-left">ID: </strong><span class="float-right" t-field="doc.id"/></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #616161;"><strong class="float-left">Location: </strong><span class="float-right" t-field="doc.sale_order_id.location"/></td>
-                        <td style="border: 1px solid #616161;"><strong class="float-left">PO Number: </strong><span class="float-right" t-field="doc.sale_order_id.po_number"/></td>
-                        <td style="border: 1px solid #616161;"><strong class="float-left">Date: </strong><span class="float-right" t-field="doc.date_performed"/></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #616161;"><strong class="float-left">Shift: </strong><span class="float-right" t-field="doc.shift_type"/></td>
-                        <td style="border: 1px solid #616161;" colspan="2"><strong class="float-left">Work Order #: </strong><span class="float-right" t-field="doc.sale_order_id.name"/></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #616161;" colspan="3"><strong class="float-left">Task Description: </strong><span class="float-right" t-field="doc.name"/></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </template>
-
-    <template id="spence_summary_table">
-        <div class="table-responsive-sm" >
-            <table class="table table-sm table-bordered o_main_table" >
-                <tbody class="sale_tbody">
-                    <tr>
-                        <td colspan="3" style="border: 1px solid #616161;"><t t-esc="doc.note"/><span t-if="not doc.note">No daily summary provided</span></td>
-                    </tr>
-                    <tr>
-                        <td style="width: 33%; border: 1px solid #616161;"><strong class="float-left">Shift: </strong><span class="float-right" t-field="doc.shift_type"/></td>
-                        <td style="width: 33%; border: 1px solid #616161;"><strong class="float-left">LOA: </strong><span class="float-right" t-field="doc.loa"/></td>
-                        <td style="width: 33%; border: 1px solid #616161;"><strong class="float-left">Accommodation: </strong><span class="float-right" t-field="doc.accommodations"/></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </template>
-
-    <template id="spence_signature_table">
-        <div class="table-responsive-sm">
-            <!-- We have to add border: 0 to everything because WKHTMLTOPDF is stupid and doesn't
-                 respect the table-borderless class.  -->
-            <table class="table table-sm table-borderless o_main_table" style="border: 0;" >
-                <tbody class="sale_tbody" style="border: 0;">
-                    <tr>
-                        <td class="text-center" style="width: 45%; border: 0; border-bottom: 1px solid #616161;">
-                            <img t-if="doc.employee_signature" t-att-src="image_data_uri(doc.employee_signature)" style="max-height: 2cm; max-width: 8cm;"/>
-                        </td>
-                        <td style="width: 10%; border: 0;"/>
-                        <td class="text-center" style="width: 45%; border: 0; border-bottom: 1px solid #616161;">
-                            <img t-if="doc.customer_signature" t-att-src="image_data_uri(doc.customer_signature)" style="max-height: 2cm; max-width: 8cm;"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-0" style="border: 0;">
-                            <strong class="float-left"><span t-field="doc.employee_id.name"/></strong>
-                            <span class="float-right" t-field="doc.employee_signature_date"/>
-                        </td>
-                        <td class="p-0" style="border: 0;"/>
-                        <td class="p-0" style="border: 0;">
-                            <strong class="float-left"><span t-field="doc.customer_signature_name"/></strong>
-                            <span t-if="doc.customer_signature_date" class="float-right" t-field="doc.customer_signature_date"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-0" style="border: 0;">
-                            <strong class="float-left">Spence Representative</strong>
-                        </td>
-                        <td class="p-0" style="border: 0;"/>
-                        <td class="p-0" style="border: 0;">
-                            <strong class="float-left">Client Representative</strong>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </template>
 </odoo>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="spence_costed_lem_report">
+    <template id="spence_costed_lem_report" name="Spence: Costed LEM Sheets">
         <t t-call="web.html_container">
             <t t-set="is_pro_forma" t-value="True"/>
             <t t-foreach="docs" t-as="lem">
@@ -10,7 +10,7 @@
         </t>
     </template>
 
-    <template id="spence_costed_lem_report_document" inherit_id="sale.report_saleorder_document" primary="True">
+    <template id="spence_costed_lem_report_document" inherit_id="sale.report_saleorder_document" primary="True" name="Spence: Costed LEM Sheet, Page">
         <xpath expr="//h2" position="replace"/>
         <xpath expr="//t[@t-set='address']" position="replace"/>
 
