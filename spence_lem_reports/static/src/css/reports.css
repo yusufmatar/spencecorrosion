@@ -7,7 +7,7 @@ tbody:not(.o_total) {
 .text-black {
     color: black !important;
 }
-thead {
+.table thead th {
     color: red !important;
 }
 .bordered {

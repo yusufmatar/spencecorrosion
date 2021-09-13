@@ -53,6 +53,7 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    is_labour = fields.Boolean("Is Labour", related="product_id.is_labour")
     qty_reported = fields.Float("Reported Quantity", default=0, copy=False, digits='Product Unit of Measure')
     qty_unreported = fields.Float("Unreported Quantity", store=True, copy=False, readonly=False, 
                                     compute="_compute_qty_unreported", inverse="_compute_qty_reported",
@@ -75,16 +76,16 @@ class SaleOrderLine(models.Model):
                 'unreported_price_subtotal': taxes['total_excluded'],
             })
 
-    @api.depends('qty_delivered','qty_reported')
+    @api.depends('qty_delivered','qty_reported','product_uom_qty','is_labour')
     def _compute_qty_unreported(self):
         for line in self:
-            line.qty_unreported = line.qty_delivered - line.qty_reported
+            line.qty_unreported = (line.qty_delivered if line.is_labour else line.product_uom_qty) - line.qty_reported
 
     def _update_qty_reported(self):
         for line in self:
-            line.qty_reported = line.qty_delivered
+            line.qty_reported = (line.qty_delivered if line.is_labour else line.product_uom_qty)
     
     @api.onchange('qty_unreported')
     def _compute_qty_reported(self):
         for line in self:
-            line.qty_reported = line.qty_delivered - line.qty_unreported
+            line.qty_reported = (line.qty_delivered if line.is_labour else line.product_uom_qty) - line.qty_unreported

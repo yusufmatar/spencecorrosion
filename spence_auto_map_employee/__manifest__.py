@@ -17,10 +17,12 @@ Task ID: 2586808
     'category': 'Custom Development',
     'version': '1.0',
     'license': 'OPL-1',
-    'depends': ['sale_timesheet'],
+    'depends': ['sale_timesheet','spence_labour_product'],
     'data': [
         'views/hr_employee.xml',
-        'views/product_template.xml'
+        'views/product_template.xml',
+        'views/task_views.xml',
+        'reports/lem.xml'
     ],
     'application': False,
 }
