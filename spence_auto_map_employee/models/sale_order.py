@@ -15,10 +15,17 @@ class SaleOrder(models.Model):
             if any(sale.order_line.mapped(lambda l: l.product_id.product_type_lem == 'labour')):
                 sale.project_id.pricing_type = 'employee_rate'
                 EmployeeMap = sale.env['project.sale.line.employee.map']
+
                 for line in sale.order_line.filtered(lambda l: l.product_id.product_type_lem == 'labour'):
-                    EmployeeMap.create({
-                        'project_id': sale.project_id.id,
-                        'sale_line_id': line.id,
-                        'employee_id': line.product_id.labourer_title_id.id,
-                    })
+                    emp_map = EmployeeMap.search([('project_id','=',sale.project_id.id),('employee_id','=',line.product_id.labourer_title_id.id)])
+                    if emp_map:
+                        emp_map[0].write({
+                            'sale_line_id': line.id,
+                        })
+                    else:
+                        EmployeeMap.create({
+                            'project_id': sale.project_id.id,
+                            'sale_line_id': line.id,
+                            'employee_id': line.product_id.labourer_title_id.id,
+                        })
         return res
