@@ -1,0 +1,18 @@
+.header {
+    margin-bottom: 0 !important;
+}
+tbody:not(.o_total) {
+    color: black !important;
+}
+.text-black {
+    color: black !important;
+}
+.table thead th {
+    color: red !important;
+}
+.bordered {
+    border: 1px solid #616161 !important;
+}
+.no-border {
+    border: 0 !important
+}

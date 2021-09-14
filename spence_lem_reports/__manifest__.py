@@ -2,10 +2,14 @@
 {
     'name': "Spence Corrosion: LEM Reports",
 
-    'summary': """""",
+    'summary': """Daily LEM sheets""",
 
     'description': """
-        []
+Spence Corrosion: LEM Reports
+=============================
+Creates a new LEM model to store daily work reports.
+
+Task IDs: 2585433, 2629012, 2621900
         """,
 
     'author': 'Odoo Inc',
@@ -21,6 +25,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'views/assets.xml',
         'views/crm_lead.xml',
         'views/worksheet_lem.xml',
         'views/project_task.xml',

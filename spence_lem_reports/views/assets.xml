@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="spence_report_assets_common" name="Spence: Report Styles" inherit_id="web.report_assets_common">
+        <xpath expr="." position="inside">
+            <link href="/spence_lem_reports/static/src/css/reports.css" rel="stylesheet"/>
+        </xpath>
+    </template>
+</odoo>

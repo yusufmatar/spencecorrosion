@@ -59,10 +59,10 @@ class LEM(models.Model):
             try:
                 loa_lines = lem.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'loa')
                 if loa_lines:
-                    loa_lines[0].qty_delivered += int(lem.loa)
+                    loa_lines[0].product_uom_qty += int(lem.loa)
                 accommodation_lines = lem.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'accommodations')
                 if accommodation_lines:
-                    accommodation_lines[0].qty_delivered += int(lem.accommodations)
+                    accommodation_lines[0].product_uom_qty += int(lem.accommodations)
             except:
                 raise ValidationError('LoA and Accommodations must be numbers!')
         return True

@@ -21,13 +21,13 @@ Task ID: 2603796
     'license': 'OPL-1',
 
     # any module necessary for this one to work correctly
-    'depends': ['spence_lem_reports'],
+    'depends': ['spence_lem_reports','spence_labour_product'],
 
     # always loaded
     'data': [
         'views/sale.xml',
         'reports/lem.xml',
-        'reports/costed_lem.xml'
+        'reports/costed_lem.xml',
     ],
     'application': False,
 }
