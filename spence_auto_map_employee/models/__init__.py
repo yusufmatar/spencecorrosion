@@ -4,3 +4,4 @@
 from . import hr_employee
 from . import sale_order
 from . import timesheet
+from . import product_template

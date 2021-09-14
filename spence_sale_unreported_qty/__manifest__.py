@@ -21,7 +21,7 @@ Task ID: 2603796
     'license': 'OPL-1',
 
     # any module necessary for this one to work correctly
-    'depends': ['spence_lem_reports','spence_labour_product'],
+    'depends': ['spence_lem_reports'],
 
     # always loaded
     'data': [
