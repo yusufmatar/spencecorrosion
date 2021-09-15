@@ -53,7 +53,7 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    is_labour = fields.Boolean("Is Labour", related="product_id.is_labour")
+    is_labour = fields.Boolean("Is Labour", compute="_compute_is_labour")
     qty_reported = fields.Float("Reported Quantity", default=0, copy=False, digits='Product Unit of Measure')
     qty_unreported = fields.Float("Unreported Quantity", store=True, copy=False, readonly=False, 
                                     compute="_compute_qty_unreported", inverse="_compute_qty_reported",
@@ -62,6 +62,10 @@ class SaleOrderLine(models.Model):
     unreported_price_tax = fields.Float(compute='_compute_amount_unreported', string='Unreported Total Tax', readonly=True, store=True)
     unreported_price_total = fields.Monetary(compute='_compute_amount_unreported', string='Unreported Total', readonly=True, store=True)
    
+    def _compute_is_labour(self):
+        for line in self:
+            line.is_labour = line.product_id.product_type_lem == 'labour'
+
     @api.depends('qty_unreported', 'discount', 'price_unit', 'tax_id')
     def _compute_amount_unreported(self):
         """

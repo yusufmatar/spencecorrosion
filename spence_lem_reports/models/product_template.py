@@ -8,4 +8,5 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     product_type_lem = fields.Selection(string="Type", 
-                    selection=[('equipment','Equipment'),('material','Material'),('accommodations','Accommodation'),('loa','LoA')])
+                    selection=[('equipment','Equipment'),('material','Material'),('accommodations','Accommodation'),
+                               ('loa','LoA'),('labour','Labour')])

@@ -14,7 +14,7 @@ class SaleOrder(models.Model):
     lem_ids = fields.One2many(comodel_name='worksheet.lem', inverse_name='sale_order_id', string='LEMs associated to this sale')
     lem_count = fields.Integer(string='LEM', compute='_compute_lem_ids')
 
-    use_costed_report = fields.Boolean("Use Costed Report", default=False)
+    use_costed_report = fields.Boolean("Use Costed LEM", default=False)
 
     @api.depends('lem_ids')
     def _compute_lem_ids(self):
