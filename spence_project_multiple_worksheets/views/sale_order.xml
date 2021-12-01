@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Smart button to take the user to the worksheet tree view for sheets related to the sale order -->
+    <record id="view_order_form_worksheet" model="ir.ui.view">
+        <field name="name">Spence: Add Worksheet Smart Button</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="button_task_worksheets" 
+                        type="object" icon="fa-pencil-square-o" attrs="{'invisible': [('worksheet_count','=',0)]}">
+                    <field name="worksheet_count"/>
+                    <span attrs="{'invisible': [('worksheet_count','&gt;', 1)]}">Worksheet</span>
+                    <span attrs="{'invisible': [('worksheet_count','&lt;=', 1)]}">Worksheets</span>    
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
