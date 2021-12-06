@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="spence_hr_empoyee_form" model="ir.ui.view">
+    <record id="spence_hr_employee_form" model="ir.ui.view">
         <field name="name">Spence Corrosion: HR Employee Form</field>
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='coach_id']" position="after">
                 <field name="employee_type" widget="radio" options="{&quot;horizontal&quot;:true}"/>
+                <field name="overtime_title_id" attrs="{'invisible':[('employee_type','=','employee')]}"/>
             </xpath>
         </field>
     </record>
