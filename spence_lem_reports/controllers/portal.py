@@ -54,7 +54,8 @@ class CustomerPortal(CustomerPortal):
         # Create normal LEM report
         pdf = request.env.ref('spence_lem_reports.spence_lem_sheet_pdf').sudo()._render_qweb_pdf([lem_sudo.id])[0]
         filename = f"LEM{' - ' + lem_sudo.sale_order_id.name if lem_sudo.sale_order_id else ''} - {lem_sudo.name} - {lem_sudo.date_performed.strftime('%d-%m-%Y')} - {lem_sudo.id}"
-        lem_sudo.task_id.message_post(body=_('The worksheet has been signed'), attachments=[(filename, pdf)])
+        for task in lem_sudo.task_ids:
+            task.message_post(body=_('The worksheet has been signed'), attachments=[(filename, pdf)])
         lem_sudo.report_attachment_id = request.env['ir.attachment'].create({
                     'name': filename,
                     'res_id': lem_sudo.id,

@@ -5,11 +5,11 @@
         <field name="name">Spence: LEM Tree</field>
         <field name="model">worksheet.lem</field>
         <field name="arch" type="xml">
-            <tree create="0" edit="0" delete="0">
+            <tree>
                 <field name="id"/>
-                <field name="task_id" invisible="not context.get('from_sale_order', False)"/>
+                <field name="task_ids" widget="many2many_tags"/>
                 <field name="state" invisible="1"/>
-                <field name="date_performed" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                <field name="date_performed" attrs="{'readonly':[('state','!=', 'draft')]}"/>
                 <field name="customer_signature_date"/>
           </tree>
         </field>
@@ -22,7 +22,7 @@
         <field name="arch" type="xml">
             <form string="LEM">
                 <header>
-                    <!-- <button name="button_employee_sign" string="Validate" type="object" class="btn btn-primary float-right" attrs="{'invisible':[('state','in', ['completed','sent','signed'])]}" /> -->
+                    <button name="action_confirm" string="Validate" type="object" class="btn btn-primary float-right" attrs="{'invisible':[('state','!=', 'draft')]}" />
                     <button name="button_send_report" string="Send by Mail" type="object" class="btn btn-secondary float-right" attrs="{'invisible':['|',('state','=', 'draft'),('partner_id','=',False)]}" />
                     <field name="state" widget="statusbar"/>
                 </header>
@@ -37,9 +37,10 @@
                     </div>
                     <group>
                         <group>
-                            <field name="task_id" invisible="1"/>
-                            <field name="partner_id" invisible="1"/>
-                            <field name="name" string="Task" readonly="1" attrs="{'invisible':[('task_id','=',False)]}"/>
+                            <field name="sale_order_id"/>
+                            <field name="task_ids" widget="many2many_tags"/>
+                            <field name="partner_id"/>
+                            <!-- <field name="name" string="Task" readonly="1"/> -->
                             <field name="shift_type" widget="radio" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
                         </group>
                         <group>
@@ -70,6 +71,16 @@
                             <field name="report_attachment" widget="pdf_viewer" nolabel="1"/>
                         </group>
                     </group>
+                    <!-- <notebook>
+                        <page string="Report" attrs="{'invisible':[('report_attachment','=', False)]}">
+                            <group colspan="4" attrs="{'invisible':[('report_attachment','=', False)]}">
+                                <field name="report_attachment" widget="pdf_viewer" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Tasks">
+                            <field name="task_ids"/>
+                        </page>
+                    </notebook> -->
                 </sheet>
             </form>
         </field>

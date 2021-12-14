@@ -19,5 +19,5 @@ class CustomerPortal(CustomerPortal):
             return {'error': _('Invalid LEM Sheet.')}
         # Update sale order lines and timesheet lines
         lem_sudo.sale_order_id.order_line._update_qty_reported()
-        lem_sudo.task_id.timesheet_ids._mark_timesheets_reported()
+        lem_sudo.task_ids.timesheet_ids._mark_timesheets_reported()
         return response

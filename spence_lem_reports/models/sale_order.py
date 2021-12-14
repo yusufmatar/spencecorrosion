@@ -23,7 +23,11 @@ class SaleOrder(models.Model):
 
     def button_lems(self):
         context = dict(self.env.context)
-        context['from_sale_order'] = True
+        context.update({
+            'from_sale_order': True,
+            'default_sale_order_id': self.id,
+            'default_partner_id': self.partner_id.id
+        })
         return {
             'type': 'ir.actions.act_window',
             'view_mode': 'tree,form',

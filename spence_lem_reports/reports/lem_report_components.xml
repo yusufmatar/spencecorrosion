@@ -31,15 +31,17 @@
             <thead>
                 <tr>
                     <th class="text-left" style="width: 15%">Date</th>
+                    <th class="text-left" t-if="len(doc.task_ids)>1">Task</th>
                     <th class="text-left" style="width: 35%">Employee</th>
                     <th class="text-left">Description</th>
                     <th class="text-left" style="width: 15%">Time Spent</th>
                 </tr>
             </thead>
             <tbody class="sale_tbody">
-                <t t-foreach="doc.task_id.timesheet_ids" t-as="line">
+                <t t-foreach="doc.task_ids.timesheet_ids" t-as="line">
                     <tr>
                         <td class="text-left"><span t-field="line.date"/></td>
+                        <td class="text-left"><span t-field="line.task_id.name"/></td>
                         <td class="text-left"><span t-field="line.employee_id.name"/></td>
                         <td class="text-left"><span t-field="line.display_name"/></td>
                         <td class="text-left"><span t-field="line.unit_amount" t-options="{'widget': 'float_time'}"/><span> hour(s)</span></td>
@@ -67,7 +69,7 @@
                 <tr>
                     <td class="bordered"><strong class="float-left">Shift: </strong><span class="float-right" t-field="doc.shift_type"/></td>
                     <td class="bordered"><strong class="float-left">Work Order #: </strong><span class="float-right" t-field="doc.sale_order_id.name"/></td>
-                    <td class="bordered"><strong class="float-left">Task: </strong><span class="float-right" t-field="doc.name"/></td>
+                    <td class="bordered"><strong class="float-left">Tasks: </strong><span class="float-right" t-field="doc.name"/></td>
                 </tr>
             </tbody>
         </table>
@@ -95,7 +97,7 @@
 </template>
 
 <template id="spence_signature_table">
-    <div class="table-responsive-sm">
+    <div class="table-responsive-sm" style="page-break-inside: avoid">
         <table class="table table-sm table-borderless o_main_table no-border">
             <tbody class="sale_tbody no-border">
                 <tr>

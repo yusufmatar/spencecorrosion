@@ -19,9 +19,7 @@ Task ID: 2586808
     'license': 'OPL-1',
     'depends': ['sale_timesheet'],
     'data': [
-        'views/hr_employee.xml',
         'views/product_template.xml',
-        'views/task_views.xml',
         'reports/lem.xml'
     ],
     'application': False,
