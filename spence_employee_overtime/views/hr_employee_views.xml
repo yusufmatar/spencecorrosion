@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='coach_id']" position="after">
                 <field name="employee_type" widget="radio" options="{&quot;horizontal&quot;:true}"/>
+                <field name="job_title_ids" widget="many2many_tags" attrs="{'invisible':[('employee_type','=','job_title')]}"/>
                 <field name="overtime_title_id" attrs="{'invisible':[('employee_type','=','employee')]}"/>
             </xpath>
         </field>

@@ -24,7 +24,7 @@
                 </div></div>
                 <!-- Timesheets -->
                 <div class="row p-1"><div class="col-12">
-                    <t t-if="doc.task_id.allow_timesheets and doc.task_id.timesheet_ids">
+                    <t t-if="any(doc.task_ids.mapped(allow_timesheets)) and doc.task_ids.timesheet_ids">
                         <h3>Timesheets</h3>
                         <t t-call="spence_lem_reports.spence_timesheet_table"/>
                     </t>

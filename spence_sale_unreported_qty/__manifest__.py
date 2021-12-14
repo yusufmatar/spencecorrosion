@@ -26,6 +26,7 @@ Task ID: 2603796
     # always loaded
     'data': [
         'views/sale.xml',
+        'views/task_views.xml',
         'reports/lem.xml',
         'reports/costed_lem.xml',
     ],

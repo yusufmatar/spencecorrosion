@@ -16,13 +16,12 @@ class LEM(models.Model):
     state = fields.Selection(string='State', default='draft',
                                 selection=[('draft','Draft'),('completed','Completed'),('sent','Sent'),('signed','Signed')])
 
-    # Task Related Fields
-    task_id = fields.Many2one(comodel_name='project.task', required=True, readonly=True, ondelete='cascade', index=True)
-    name = fields.Char(string='Task', related='task_id.name')
-    user_id = fields.Many2one(related='task_id.user_id')
-    partner_id = fields.Many2one(related='task_id.partner_id')
-    sale_order_id = fields.Many2one(related='task_id.sale_order_id', store=True)
-    
+    name = fields.Char(string='LEM', compute="_compute_lem_name")
+    sale_order_id = fields.Many2one(string="Sale Order", comodel_name='sale.order', required=True, index=True, store=True, readonly=True)
+    task_ids = fields.Many2many(string="Tasks", comodel_name='project.task', domain="[('sale_order_id', '=', sale_order_id)]")
+    user_id = fields.Many2one(string="User", comodel_name='res.users', default=lambda self: self.env.user, copy=False, readonly=True)
+    partner_id = fields.Many2one(string="Customer", comodel_name="res.partner", required=True)
+
     # LEM Fields
     date_performed = fields.Date(string='Date Performed', required=True, default=fields.Date.context_today)
     shift_type = fields.Selection(string='Shift Type', required=True, default='day', selection=[('day','Day'),('night','Night')])
@@ -45,6 +44,10 @@ class LEM(models.Model):
     # Reports
     report_attachment_id = fields.Many2one(string='Report Attachment', comodel_name='ir.attachment', help='Final PDF Report', copy=False, readonly=True)
     report_attachment = fields.Binary('Report', related='report_attachment_id.datas')
+
+    def _compute_lem_name(self):
+        for lem in self:
+            lem.name = ', '.join(lem.mapped('task_ids.name'))
 
 
     # Buttons
