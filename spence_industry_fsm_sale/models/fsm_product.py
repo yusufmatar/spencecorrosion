@@ -17,6 +17,25 @@ class FSMProduct(models.Model):
         for record in self.filtered(lambda r: r.product_id and r.task_id):
             record.product_id.with_context(fsm_task_id = record._context.get('default_task_id', record.task_id.id)).set_fsm_quantity(record.qty)
 
+class Product(models.Model):
+    _inherit = 'product.product'
+
+    def set_fsm_quantity(self, quantity):
+        res = super().set_fsm_quantity(quantity)
+        task = self._get_contextual_fsm_task()
+        fsm_product_task = self.env['fsm.product.task']
+        fsm_product = fsm_product_task.search([('task_id','=',task.id),('product_id','=',self.id)],limit=1)
+        if fsm_product:
+            fsm_product.qty = quantity
+        else:
+            fsm_product_task.create({
+                'task_id': task.id,
+                'product_id': self.id,
+                'qty': quantity
+            })
+        return res
+            
+
 
 class ProjectTask(models.Model):
     _inherit = 'project.task'
