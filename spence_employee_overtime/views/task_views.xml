@@ -5,6 +5,9 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited"/>
         <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position="before">
+                <xpath expr="//notebook/page[@id='timesheets_tab']" position="move"/>
+            </xpath>
             <xpath expr="//field[@name='timesheet_ids']/tree/field[@name='employee_id']" position="after">
                 <field name="employee_partner_id" widget="many2one_avatar_employee"/>
             </xpath>
