@@ -3,6 +3,8 @@
 
 from odoo import api, fields, models, _
 from datetime import datetime
+from functools import partial
+from odoo.tools.misc import formatLang, get_lang
 
 from odoo.exceptions import UserError, ValidationError
 
@@ -18,6 +20,7 @@ class LEM(models.Model):
 
     name = fields.Char(string='LEM', compute="_compute_lem_name")
     sale_order_id = fields.Many2one(string="Sale Order", comodel_name='sale.order', required=True, index=True, store=True, readonly=True, states={'draft': [('readonly', False)]})
+    currency_id = fields.Many2one(string="Currency", comodel_name="res.currency", related="sale_order_id.currency_id")
     task_id = fields.Many2one(string="Task", comodel_name='project.task', domain="[('sale_order_id', '=', sale_order_id)]", required=True, readonly=True, states={'draft': [('readonly', False)]})
     user_id = fields.Many2one(string="User", comodel_name='res.users', default=lambda self: self.env.user, copy=False, readonly=True, states={'draft': [('readonly', False)]})
     partner_id = fields.Many2one(string="Customer", comodel_name="res.partner", required=True, readonly=True, states={'draft': [('readonly', False)]})
@@ -57,6 +60,26 @@ class LEM(models.Model):
 
     # Sale Order Related FIelds
     order_lines = fields.Many2many(comodel_name="sale.order.line", string="Order Lines", compute="_compute_order_lines")
+
+    # Pricing for Costed LEM
+    amount_untaxed = fields.Monetary(string='Untaxed Amount', readonly=True, compute='_amount_all')
+    amount_tax = fields.Monetary(string='Taxes', readonly=True, compute='_amount_all')
+    amount_total = fields.Monetary(string='Total', readonly=True, compute='_amount_all')
+    
+    def _amount_all(self):
+        for lem in self:
+            amount_untaxed = amount_tax = 0.0
+            for line in lem.product_line_ids:
+                amount_untaxed += line.price_subtotal
+                amount_tax += line.price_tax
+            for line in lem.labour_line_ids:
+                amount_untaxed += line.price_subtotal + line.ot_price_subtotal
+                amount_tax += line.price_tax + line.ot_price_tax
+            lem.update({
+                'amount_untaxed': amount_untaxed,
+                'amount_tax': amount_tax,
+                'amount_total': amount_untaxed + amount_tax,
+            })
 
     def _compute_order_lines(self):
         for lem in self:
@@ -212,24 +235,30 @@ class LEMProduct(models.Model):
 
     order_line = fields.Many2one(string="Sale Order Line", comodel_name="sale.order.line", compute="_compute_order_line")
     price_unit = fields.Float(string="Price", related="order_line.price_unit")
+    discount = fields.Float(related="order_line.discount")
     tax_id = fields.Many2many(comodel_name='account.tax', string='Taxes', related="order_line.tax_id")
     currency_id = fields.Many2one(string="Currency", comodel_name="res.currency", related="order_line.currency_id")
     
-    # @api.onchange('qty')
-    # def set_fsm_qty(self):
-    #     for record in self.filtered(lambda r: r.product_id and r.task_id):
-    #         record.product_id.with_context(fsm_task_id = record._context.get('default_task_id', record.task_id.id)).set_fsm_quantity(record.qty)
+    price_tax = fields.Float(compute='_compute_amount', string='Total Tax', readonly=True, store=True)
+    price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
+    price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', readonly=True, store=True)
+
+    @api.depends('qty', 'discount', 'price_unit', 'tax_id', 'order_line')
+    def _compute_amount(self):
+        for line in self:
+            price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            taxes = line.tax_id.compute_all(price, line.order_line.order_id.currency_id, line.qty, product=line.product_id, partner=line.order_line.order_id.partner_shipping_id)
+            line.update({
+                'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'price_total': taxes['total_included'],
+                'price_subtotal': taxes['total_excluded'],
+            })
 
     @api.depends('lem_id','product_id')
     def _compute_order_line(self):
         for line in self:
-            line.order_line = line.lem_id.sale_order_id.order_line.search([],limit=1)
-
-    # @api.depends('product_id','lem_id')
-    # def _compute_price(self):
-    #     for line in self:
-    #         line.currency_id = 0
-    #         line.price = 0
+            order_line = line.lem_id.sale_order_id.order_line.filtered(lambda l: l.product_id == line.product_id)
+            line.order_line = order_line[0] if order_line else False
 
 class LEMLabour(models.Model):
     _name = 'worksheet.lem.labour'
@@ -270,10 +299,63 @@ class LEMLabour(models.Model):
 
     note = fields.Text(string="Description")
 
-    order_line = fields.Many2one(string="Order Line", comodel_name="sale.order.line", compute="_compute_order_line")
+    order_line = fields.Many2one(string="Order Line", comodel_name="sale.order.line", compute="_compute_order_line", store=True)
+    ot_order_line = fields.Many2one(string="OT Order Line", comodel_name="sale.order.line", compute="_compute_order_line", store=True)
+    currency_id = fields.Many2one(string="Currency", comodel_name="res.currency", related="order_line.currency_id")
+
+    price_tax = fields.Float(compute='_compute_amount', string='Total Tax', readonly=True)
+    price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True)
+    price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', readonly=True)
+    ot_price_tax = fields.Float(compute='_compute_amount', string='OT Total Tax', readonly=True)
+    ot_price_total = fields.Monetary(compute='_compute_amount', string='OT Total', readonly=True)
+    ot_price_subtotal = fields.Monetary(compute='_compute_amount', string='OT Subtotal', readonly=True)
+
+    @api.depends('order_line','ot_order_line', 'regular_hours','overtime_hours')
+    def _compute_amount(self):
+        for line in self:
+            price = line.order_line.price_unit * (1 - (line.order_line.discount or 0.0) / 100.0)
+            taxes = line.order_line.tax_id.compute_all(price, line.order_line.order_id.currency_id, line.regular_hours, product=line.order_line.product_id, partner=line.order_line.order_id.partner_shipping_id)
+            price_ot = line.ot_order_line.price_unit * (1 - (line.ot_order_line.discount or 0.0) / 100.0)
+            taxes_ot = line.ot_order_line.tax_id.compute_all(price_ot, line.ot_order_line.order_id.currency_id, line.overtime_hours, product=line.ot_order_line.product_id, partner=line.ot_order_line.order_id.partner_shipping_id)
+            line.update({
+                'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'price_total': taxes['total_included'],
+                'price_subtotal': taxes['total_excluded'],
+                'ot_price_tax': sum(t.get('amount', 0.0) for t in taxes_ot.get('taxes', [])),
+                'ot_price_total': taxes_ot['total_included'],
+                'ot_price_subtotal': taxes_ot['total_excluded'],
+            })
+
 
     def _compute_order_line(self):
         for line in self:
             employee_mapping = line.lem_id.task_id.project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == line.job_title_id)
-            if employee_mapping:
+            employee_ot_mapping = line.lem_id.task_id.project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == line.job_title_id.overtime_title_id)
+            if employee_mapping.sale_line_id:
                 line.order_line = employee_mapping.sale_line_id
+            else:
+                order_line = self.env['sale.order.line'].create({
+                    "order_id": line.lem_id.sale_order_id.id,
+                    "product_id": self.env['product.product'].search([('labourer_title_id','=',line.job_title_id.id)],limit=1).id,
+                    "product_uom_qty": 0
+                })
+                line.order_line = order_line
+                line.lem_id.task_id.project_id.sale_line_employee_ids.create({
+                    'project_id': line.lem_id.task_id.project_id.id,
+                    'employee_id': line.job_title_id.id,
+                    'sale_line_id': order_line.id
+                })
+            if employee_ot_mapping:
+                line.ot_order_line = employee_ot_mapping.sale_line_id
+            else:
+                order_line = self.env['sale.order.line'].create({
+                    "order_id": line.lem_id.sale_order_id.id,
+                    "product_id": self.env['product.product'].search([('labourer_title_id','=',line.job_title_id.overtime_title_id.id)],limit=1).id,
+                    "product_uom_qty": 0
+                })
+                line.ot_order_line = order_line
+                line.lem_id.task_id.project_id.sale_line_employee_ids.create({
+                    'project_id': line.lem_id.task_id.project_id.id,
+                    'employee_id': line.job_title_id.overtime_title_id.id,
+                    'sale_line_id': order_line.id
+                })

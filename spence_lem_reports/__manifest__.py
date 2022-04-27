@@ -25,7 +25,7 @@ Task IDs: 2585433, 2629012, 2621900
         'sale_project',
         'industry_fsm_report',
         'industry_fsm_sale',
-        'spence_employee_overtime'
+        'spence_employee_overtime',
     ],
 
     # always loaded

@@ -17,10 +17,7 @@ Task ID: 2586808
     'category': 'Custom Development',
     'version': '1.0',
     'license': 'OPL-1',
-    'depends': ['sale_timesheet','spence_lem_reports'],
-    'data': [
-        'views/product_template.xml',
-        'reports/lem.xml'
-    ],
+    'depends': ['sale_timesheet','spence_lem_reports','spence_employee_overtime'],
+    'data': [],
     'application': False,
 }
