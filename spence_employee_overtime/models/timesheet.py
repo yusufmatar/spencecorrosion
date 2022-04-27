@@ -32,38 +32,38 @@ class Timesheet(models.Model):
 
     employee_id = fields.Many2one(string='Job Title', domain=_domain_title_id)
     employee_partner_id = fields.Many2one(string='Employee', comodel_name='hr.employee', domain=_domain_employee_id)
-    overtime_allowed = fields.Boolean(string="Overtime Entry Allowed", compute="_compute_allow_overtime_entry")
-    unit_amount_overtime = fields.Float(string='Overtime (Hours)', default=0.0)
-    overtime_line_id = fields.Many2one(string='Overtime Line', comodel_name='account.analytic.line', readonly=True)
-    normal_time_id = fields.One2many(string='Regular Time', comodel_name='account.analytic.line', inverse_name='overtime_line_id')
+    # overtime_allowed = fields.Boolean(string="Overtime Entry Allowed", compute="_compute_allow_overtime_entry")
+    # unit_amount_overtime = fields.Float(string='Overtime (Hours)', default=0.0)
+    # overtime_line_id = fields.Many2one(string='Overtime Line', comodel_name='account.analytic.line', readonly=True)
+    # normal_time_id = fields.One2many(string='Regular Time', comodel_name='account.analytic.line', inverse_name='overtime_line_id')
 
-    @api.onchange('employee_id')
-    def _compute_allow_overtime_entry(self):
-        for line in self:
-            line.overtime_allowed = bool(line.employee_id.overtime_title_id) and not bool(line.overtime_line_id)
+    # @api.onchange('employee_id')
+    # def _compute_allow_overtime_entry(self):
+    #     for line in self:
+    #         line.overtime_allowed = bool(line.employee_id.overtime_title_id) and not bool(line.overtime_line_id)
 
-    def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('unit_amount_overtime',False) and vals.get('employee_id', False):    
-                job_title = self.env['hr.employee'].browse(vals['employee_id'])
-                task = self.env['project.task'].browse(vals['task_id'])
-                project = self.env['project.project'].browse(vals['project_id'])
-                overtime_line = self.create([dict(vals, **{
-                    'so_line': self._timesheet_determine_sale_line(task, job_title.overtime_title_id, project).id,
-                    'unit_amount': vals['unit_amount_overtime'],
-                    'employee_id': job_title.overtime_title_id.id,
-                    'unit_amount_overtime': 0
-                })])
-                vals.update({
-                    'overtime_line_id': overtime_line.id,
-                    'unit_amount_overtime': 0
-                })
-        return super().create(vals_list)
+    # def create(self, vals_list):
+    #     for vals in vals_list:
+    #         if vals.get('unit_amount_overtime',False) and vals.get('employee_id', False):    
+    #             job_title = self.env['hr.employee'].browse(vals['employee_id'])
+    #             task = self.env['project.task'].browse(vals['task_id'])
+    #             project = self.env['project.project'].browse(vals['project_id'])
+    #             overtime_line = self.create([dict(vals, **{
+    #                 'so_line': self._timesheet_determine_sale_line(task, job_title.overtime_title_id, project).id,
+    #                 'unit_amount': vals['unit_amount_overtime'],
+    #                 'employee_id': job_title.overtime_title_id.id,
+    #                 'unit_amount_overtime': 0
+    #             })])
+    #             vals.update({
+    #                 'overtime_line_id': overtime_line.id,
+    #                 'unit_amount_overtime': 0
+    #             })
+    #     return super().create(vals_list)
 
-    def write(self, values):
-        if  values.get('unit_amount_overtime',False) and self.overtime_line_id:
-            self.overtime_line_id.write({
-                'unit_amount': values['unit_amount_overtime']
-            })
-            values['unit_amount_overtime'] = 0
-        return super().write(values)
+    # def write(self, values):
+    #     if  values.get('unit_amount_overtime',False) and self.overtime_line_id:
+    #         self.overtime_line_id.write({
+    #             'unit_amount': values['unit_amount_overtime']
+    #         })
+    #         values['unit_amount_overtime'] = 0
+    #     return super().write(values)

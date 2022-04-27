@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 spence_access_worksheet_lem,Spence: Security LEM Sheets,model_worksheet_lem,base.group_user,1,1,1,1
+spence_access_worksheet_lem_product,Spence: Security LEM Sheets Equipment/Material Lines,model_worksheet_lem_product,base.group_user,1,1,1,1
+spence_access_worksheet_lem_labour,Spence: Security LEM Sheets Labour Lines,model_worksheet_lem_labour,base.group_user,1,1,1,1

@@ -21,7 +21,15 @@ class CustomerPortal(CustomerPortal):
             return request.redirect('/my')
         if report_type in ('html', 'pdf', 'text'):
             return self._show_report(model=lem_sudo, report_type=report_type, report_ref='spence_lem_reports.spence_lem_sheet_pdf', download=download)
-        return request.render("spence_lem_reports.portal_my_lem_spence", {'task': lem_sudo, 'lem': lem_sudo, 'message': message, 'source': source, 'page_name': 'lem'})
+        values = {
+            # 'task': lem_sudo, 
+            'lem': lem_sudo,
+            'message': message, 
+            'source': source, 
+            'page_name': 'order',
+            'sale_order': lem_sudo.sale_order_id
+        }
+        return request.render("spence_lem_reports.portal_my_lem_spence", values)
 
     @http.route(['/my/lem/<int:lem_id>/sign/<string:source>'], type='json', auth="public", website=True)
     def portal_lem_sign(self, lem_id, access_token=None, source=False, name=None, signature=None):
@@ -53,9 +61,9 @@ class CustomerPortal(CustomerPortal):
             lem_sudo.sale_order_id.message_post(body=_('The costed report has been generated'), attachments=[(filename, pdf)])
         # Create normal LEM report
         pdf = request.env.ref('spence_lem_reports.spence_lem_sheet_pdf').sudo()._render_qweb_pdf([lem_sudo.id])[0]
-        filename = f"LEM{' - ' + lem_sudo.sale_order_id.name if lem_sudo.sale_order_id else ''} - {lem_sudo.name} - {lem_sudo.date_performed.strftime('%d-%m-%Y')} - {lem_sudo.id}"
-        for task in lem_sudo.task_ids:
-            task.message_post(body=_('The worksheet has been signed'), attachments=[(filename, pdf)])
+        filename = f"LEM - {lem_sudo.name} - {lem_sudo.date_performed.strftime('%d-%m-%Y')} - {lem_sudo.id}"
+        # for task in lem_sudo.task_ids:
+        lem_sudo.message_post(body=_('The worksheet has been signed'), attachments=[(filename, pdf)])
         lem_sudo.report_attachment_id = request.env['ir.attachment'].create({
                     'name': filename,
                     'res_id': lem_sudo.id,

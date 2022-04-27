@@ -24,14 +24,14 @@
                 </div></div>
                 <!-- Timesheets -->
                 <div class="row p-1"><div class="col-12">
-                    <t t-if="any(doc.task_ids.mapped(allow_timesheets)) and doc.task_ids.timesheet_ids">
-                        <h3>Timesheets</h3>
+                    <t t-if="doc.labour_line_ids">
+                        <h3>Labour</h3>
                         <t t-call="spence_lem_reports.spence_timesheet_table"/>
                     </t>
                 </div></div>
                 <!-- Equipment and Materials -->
                 <div class="row p-1">
-                    <t t-set="equipment_order_lines" t-value="doc.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'equipment')"/>
+                    <t t-set="equipment_order_lines" t-value="doc.equipment_line_ids"/>
                     <div class="col-6">
                         <t t-if="equipment_order_lines">
                             <h3>Equipment</h3>
@@ -40,7 +40,7 @@
                             </t>
                         </t>
                     </div>
-                    <t t-set="material_order_lines" t-value="doc.sale_order_id.order_line.filtered(lambda l: l.product_id.product_type_lem == 'material')"/>
+                    <t t-set="material_order_lines" t-value="doc.material_line_ids"/>
                     <div class="col-6">
                         <t t-if="material_order_lines">
                             <h3>Material</h3>
