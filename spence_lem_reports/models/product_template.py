@@ -10,3 +10,4 @@ class ProductTemplate(models.Model):
     product_type_lem = fields.Selection(string="Type", 
                     selection=[('equipment','Equipment'),('material','Material'),('accommodations','Accommodation'),
                                ('loa','LoA'),('labour','Labour')])
+    labourer_title_id = fields.Many2one(string="Job Title", comodel_name="hr.employee", domain=[("employee_type","=","job_title")])

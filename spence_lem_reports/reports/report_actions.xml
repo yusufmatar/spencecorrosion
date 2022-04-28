@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        
         <record id="spence_lem_sheet_pdf" model="ir.actions.report">
             <field name="name">Spence: LEM Report (PDF)</field>
             <field name="model">worksheet.lem</field>

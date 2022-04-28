@@ -11,7 +11,7 @@
             </xpath>
             <xpath expr="//notebook/page[@name='extra_info']" position="before">
                 <page string="LEM Sheets" name="lems">
-                    <field name="lem_ids" context="{'default_task_ids':[id], 'default_sale_order_id': sale_order_id, 'default_partner_id': partner_id, 'default_name': name}" widget='one2many'>
+                    <field name="lem_ids" context="{'default_task_id':id, 'default_sale_order_id': sale_order_id, 'default_partner_id': partner_id, 'default_name': name}" widget='one2many'>
                         <tree delete="0">
                             <control>
                                 <create name="add_lem_control" string="New Sheet"/>

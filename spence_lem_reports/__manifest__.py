@@ -20,7 +20,13 @@ Task IDs: 2585433, 2629012, 2621900
     'license': 'OEEL-1',
 
     # any module necessary for this one to work correctly
-    'depends': ['sale_crm','sale_project','industry_fsm_report'],
+    'depends': [
+        'sale_crm',
+        'sale_project',
+        'industry_fsm_report',
+        'industry_fsm_sale',
+        'spence_employee_overtime',
+    ],
 
     # always loaded
     'data': [
@@ -36,7 +42,8 @@ Task IDs: 2585433, 2629012, 2621900
         'reports/lem.xml',
         'reports/costed_lem.xml',
         'reports/report_actions.xml',
-        'reports/report_templates.xml'
+        'reports/report_templates.xml',
+        'views/menu_items.xml'
     ],
     'application': False,
 }

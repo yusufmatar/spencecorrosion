@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="worksheet_lem_action" model="ir.actions.act_window">
+        <field name="name">LEMs</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">worksheet.lem</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="spence_lem_menu_root" name="LEMs" sequence="0" action="worksheet_lem_action"/>
+</odoo>

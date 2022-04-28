@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='categ_id']" position="after">
                 <field name="product_type_lem"/>
+                <field name="labourer_title_id" attrs="{'invisible': ['|',('type', '!=', 'service'),('product_type_lem','!=','labour')],
+                'required': [('type', '=', 'service'),('product_type_lem','=','labour')]}"/>
             </xpath>
         </field>
     </record>
