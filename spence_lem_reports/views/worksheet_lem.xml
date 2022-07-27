@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--  search view -->
+    <record id="spence_lem_search" model="ir.ui.view">
+        <field name="name">Spence: LEM Search</field>
+        <field name="model">worksheet.lem</field>
+        <field name="arch" type="xml">
+            <search string="Search Description">
+                <filter string="My LEMs" name="my_lems" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Draft" name="draft_lems" domain="[('state', '=', 'draft')]"/>
+                <filter string="Completed" name="completed_lems" domain="[('state', '=', 'completed')]"/>
+                <filter string="Sent" name="sent_lems" domain="[('state', '=', 'sent')]"/>
+                <filter string="Signed" name="signed_lems" domain="[('state', '=', 'signed')]"/>
+                
+                <field name="sale_order_id"/>
+                <field name="user_id"/>
+                <field name="partner_id"/>
+
+                <group expand="1" string="Group By">
+                    <filter string="Employee" name='user' context="{'group_by':'user_id'}"/>
+                    <filter string="Work Order" name='sale' context="{'group_by':'sale_order_id'}"/>
+                    <filter string="Customer" name='partner' context="{'group_by':'partner_id'}"/>
+                    <filter string="State" name='partner' context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <!-- Tree view -->
+    <record id="spence_lem_tree" model="ir.ui.view">
+        <field name="name">Spence: LEM Tree</field>
+        <field name="model">worksheet.lem</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="id"/>
+                <field name="sale_order_id"/>
+                <field name="user_id"/>
+                <field name="state"/>
+                <field name="date_performed" attrs="{'readonly':[('state','!=', 'draft')]}"/>
+                <field name="partner_id"/>
+                <field name="customer_signature_date"/>
+          </tree>
+        </field>
+    </record>
+    
+    <!-- Form view -->
+    <record id="spence_lem_form" model="ir.ui.view">
+        <field name="name">Spence: LEM Form</field>
+        <field name="model">worksheet.lem</field>
+        <field name="arch" type="xml">
+            <form string="LEM">
+                <header>
+                    <button name="action_confirm" string="Validate" type="object" class="btn btn-primary float-right" attrs="{'invisible':[('state','!=', 'draft')]}" />
+                    <button name="button_send_report" string="Send by Mail" type="object" class="btn btn-secondary float-right" attrs="{'invisible':['|',('state','=', 'draft'),('partner_id','=',False)]}" />
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="button_go_to_portal" type="object" class="oe_stat_button" icon="fa-globe icon" attrs="{'invisible':['|',('state','=', 'draft'),('partner_id','=',False)]}" >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Customer</span>
+                                <span class="o_stat_text">Preview</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sale_order_id" force_save="1"/>
+                            <field name="partner_id"/>
+                            <field name="task_id"/>
+                            <!-- <field name="name" string="Task" readonly="1"/> -->
+                            <field name="shift_type" widget="radio" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                        </group>
+                        <group>
+                            <field name="date_performed" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                            <field name="loa" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                            <field name="accommodations" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                        </group>
+                        <group colspan="4">
+                            <field name="note" string="Daily Summary" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                        </group>
+                        <!-- <group>
+                            <label for="employee_signature"/>
+                            <div>
+                                <field name="employee_signature" widget="signature" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                                <field name="employee_id" nolabel="1" attrs="{'invisible':[('state','=', 'draft')]}"/><br/>
+                                <field name="employee_signature_date" nolabel="1" attrs="{'invisible':[('state','=', 'draft')]}"/>
+                            </div>
+                        </group>
+                        <group attrs="{'invisible':[('customer_signature','=', False)]}" >
+                            <label for="customer_signature"/>
+                            <div>
+                                <field name="customer_signature" widget="signature"/>
+                                <field name="customer_signature_name" nolabel="1"/><br/>
+                                <field name="customer_signature_date" nolabel="1"/>
+                            </div>
+                        </group> -->
+                        <!-- <group colspan="4" attrs="{'invisible':[('report_attachment','=', False)]}">
+                            <field name="report_attachment" widget="pdf_viewer" nolabel="1"/>
+                        </group> -->
+                    </group>
+                    <notebook>
+                        <page string="Equipment">
+                            <field name="equipment_line_ids"
+                                   context="{'default_lem_id':id}"
+                                   force_save="1"
+                                   attrs="{'invisible':[('no_equipment_used','=',True)]}">
+                                <tree editable="bottom">
+                                    <field name="product_id" domain="[('product_type_lem','=','equipment')]"/>
+                                    <field name="qty"/>
+                                </tree>
+                            </field>
+                            <group>
+                                <field name="no_equipment_used"/>
+                            </group>
+                        </page>
+                        <page string="Material">
+                            <field name="material_line_ids"
+                                   context="{'default_lem_id':id}"
+                                   force_save="1"
+                                   attrs="{'invisible':[('no_material_used','=',True)]}">
+                                <tree editable="bottom">
+                                    <field name="product_id" domain="[('product_type_lem','=','material')]"/>
+                                    <field name="qty"/>
+                                </tree>
+                            </field>
+                            <group>
+                                <field name="no_material_used"/>
+                            </group>
+                        </page>
+                        <page string="Labour">
+                            <field name="labour_line_ids"
+                                   context="{'default_lem_id':id}">
+                            </field>
+                        </page>
+                    </notebook>
+                    <group>
+                        <group>
+                            <label for="employee_signature"/>
+                            <div>
+                                <field name="employee_signature" widget="signature" attrs="{'readonly':[('state','in', ['completed','sent','signed'])]}"/>
+                                <field name="employee_id" nolabel="1" attrs="{'invisible':[('state','=', 'draft')]}"/><br/>
+                                <field name="employee_signature_date" nolabel="1" attrs="{'invisible':[('state','=', 'draft')]}"/>
+                            </div>
+                        </group>
+                        <group attrs="{'invisible':[('customer_signature','=', False)]}" >
+                            <label for="customer_signature"/>
+                            <div>
+                                <field name="customer_signature" widget="signature"/>
+                                <field name="customer_signature_name" nolabel="1"/><br/>
+                                <field name="customer_signature_date" nolabel="1"/>
+                            </div>
+                        </group>
+                        <!-- <group colspan="4" attrs="{'invisible':[('report_attachment','=', False)]}">
+                            <field name="report_attachment" widget="pdf_viewer" nolabel="1"/>
+                        </group> -->
+                    </group>
+                    <group colspan="4" attrs="{'invisible':[('report_attachment','=', False)]}">
+                        <field name="report_attachment" widget="pdf_viewer" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="spence_lem_em_tree" model="ir.ui.view">
+        <field name="name">Spence: LEM Equipment/Material Tree</field>
+        <field name="model">worksheet.lem.product</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="product_id"/>
+                <field name="lem_id" invisible="1"/>
+                <field name="qty"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="spence_lem_em_form" model="ir.ui.view">
+        <field name="name">Spence: LEM Equipment/Material Form</field>
+        <field name="model">worksheet.lem.product</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group><group>
+                        <field name="product_id"/>
+                        <field name="qty"/>
+                    </group></group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="spence_lem_labour_tree" model="ir.ui.view">
+        <field name="name">Spence: LEM Labour Tree</field>
+        <field name="model">worksheet.lem.labour</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="date"/>
+                <field name="lem_id" invisible="1"/>
+                <field name="user_id" invisible="1"/>
+                <field name="employee_id"/>
+                <field name="job_title_id"/>
+                <field name="note"/>
+                <field name="regular_hours" widget="timesheet_uom"/>
+                <field name="overtime_hours" widget="timesheet_uom"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="spence_lem_labour_form" model="ir.ui.view">
+        <field name="name">Spence: LEM Labour Form</field>
+        <field name="model">worksheet.lem.labour</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="lem_id" invisible="1"/>
+                            <field name="user_id" invisible="1"/>
+                            <field name="employee_id"/>
+                            <field name="job_title_id"/>
+                        </group>
+                        <group>
+                            <field name="regular_hours" widget="timesheet_uom"/>
+                            <field name="overtime_hours" widget="timesheet_uom"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
