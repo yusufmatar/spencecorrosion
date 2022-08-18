@@ -36,9 +36,9 @@ class LEM(models.Model):
 
     # Equipment
     product_line_ids = fields.One2many(string="Products", comodel_name="worksheet.lem.product", inverse_name="lem_id", readonly=True, states={'draft': [('readonly', False)]})
-    equipment_line_ids = fields.One2many(string="Equipment", comodel_name="worksheet.lem.product", compute="_compute_product_lines", inverse="_inverse_product_lines", readonly=True, states={'draft': [('readonly', False)]})
+    equipment_line_ids = fields.One2many(string="Equipment", comodel_name="worksheet.lem.product", inverse_name="lem_id", domain=[('type', '=', 'equipment')], readonly=True, states={'draft': [('readonly', False)]})
     no_equipment_used = fields.Boolean(string="No Equipment Used", default=False, readonly=True, states={'draft': [('readonly', False)]})
-    material_line_ids = fields.One2many(string="Materials", comodel_name="worksheet.lem.product", compute="_compute_product_lines",  inverse="_inverse_product_lines", readonly=True, states={'draft': [('readonly', False)]})
+    material_line_ids = fields.One2many(string="Materials", comodel_name="worksheet.lem.product", inverse_name="lem_id", domain=[('type', '=', 'material')], readonly=True, states={'draft': [('readonly', False)]})
     no_material_used = fields.Boolean(string="No Material Used", default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     # Labour
@@ -90,17 +90,6 @@ class LEM(models.Model):
     def _compute_lem_name(self):
         for lem in self:
             lem.name = f"{lem.sale_order_id.name} - {lem.task_id.name}"
-
-    # @api.depends('product_line_ids')
-    def _compute_product_lines(self):
-        for lem in self:
-            lem.equipment_line_ids = lem.product_line_ids.filtered(lambda l: l.type == 'equipment')
-            lem.material_line_ids = lem.product_line_ids.filtered(lambda l: l.type == 'material')
-
-    # @api.onchange('equipment_line_ids','material_line_ids')
-    def _inverse_product_lines(self):
-        for lem in self:
-            lem.product_line_ids = lem.equipment_line_ids + lem.material_line_ids
 
     # Automation
     @api.onchange('sale_order_id')
