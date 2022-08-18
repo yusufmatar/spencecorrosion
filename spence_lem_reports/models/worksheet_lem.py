@@ -290,7 +290,7 @@ class LEMLabour(models.Model):
 
     order_line = fields.Many2one(string="Order Line", comodel_name="sale.order.line", compute="_compute_order_line", store=True)
     ot_order_line = fields.Many2one(string="OT Order Line", comodel_name="sale.order.line", compute="_compute_order_line", store=True)
-    currency_id = fields.Many2one(string="Currency", comodel_name="res.currency", related="order_line.currency_id")
+    currency_id = fields.Many2one(string="Currency", comodel_name="res.currency", related="lem_id.sale_order_id.currency_id")
 
     price_tax = fields.Float(compute='_compute_amount', string='Total Tax', readonly=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True)
@@ -315,7 +315,7 @@ class LEMLabour(models.Model):
                 'ot_price_subtotal': taxes_ot['total_excluded'],
             })
 
-
+    # @api.depends('lem_id.task_id.project_id.sale_line_employee_ids','lem_id.sale_order_id')
     def _compute_order_line(self):
         for line in self:
             employee_mapping = line.lem_id.task_id.project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == line.job_title_id)
@@ -334,7 +334,7 @@ class LEMLabour(models.Model):
                     'employee_id': line.job_title_id.id,
                     'sale_line_id': order_line.id
                 })
-            if employee_ot_mapping:
+            if employee_ot_mapping.sale_line_id:
                 line.ot_order_line = employee_ot_mapping.sale_line_id
             else:
                 order_line = self.env['sale.order.line'].create({
