@@ -36,9 +36,9 @@ class LEM(models.Model):
 
     # Equipment
     product_line_ids = fields.One2many(string="Products", comodel_name="worksheet.lem.product", inverse_name="lem_id", readonly=True, states={'draft': [('readonly', False)]})
-    equipment_line_ids = fields.One2many(string="Equipment", comodel_name="worksheet.lem.product", compute="_compute_product_lines", inverse="_inverse_product_lines", readonly=True, states={'draft': [('readonly', False)]})
+    equipment_line_ids = fields.One2many(string="Equipment", comodel_name="worksheet.lem.product", inverse_name="lem_id", domain=[('type', '=', 'equipment')], readonly=True, states={'draft': [('readonly', False)]})
     no_equipment_used = fields.Boolean(string="No Equipment Used", default=False, readonly=True, states={'draft': [('readonly', False)]})
-    material_line_ids = fields.One2many(string="Materials", comodel_name="worksheet.lem.product", compute="_compute_product_lines",  inverse="_inverse_product_lines", readonly=True, states={'draft': [('readonly', False)]})
+    material_line_ids = fields.One2many(string="Materials", comodel_name="worksheet.lem.product", inverse_name="lem_id", domain=[('type', '=', 'material')], readonly=True, states={'draft': [('readonly', False)]})
     no_material_used = fields.Boolean(string="No Material Used", default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     # Labour
@@ -90,17 +90,6 @@ class LEM(models.Model):
     def _compute_lem_name(self):
         for lem in self:
             lem.name = f"{lem.sale_order_id.name} - {lem.task_id.name}"
-
-    # @api.depends('product_line_ids')
-    def _compute_product_lines(self):
-        for lem in self:
-            lem.equipment_line_ids = lem.product_line_ids.filtered(lambda l: l.type == 'equipment')
-            lem.material_line_ids = lem.product_line_ids.filtered(lambda l: l.type == 'material')
-
-    # @api.onchange('equipment_line_ids','material_line_ids')
-    def _inverse_product_lines(self):
-        for lem in self:
-            lem.product_line_ids = lem.equipment_line_ids + lem.material_line_ids
 
     # Automation
     @api.onchange('sale_order_id')
@@ -301,7 +290,7 @@ class LEMLabour(models.Model):
 
     order_line = fields.Many2one(string="Order Line", comodel_name="sale.order.line", compute="_compute_order_line", store=True)
     ot_order_line = fields.Many2one(string="OT Order Line", comodel_name="sale.order.line", compute="_compute_order_line", store=True)
-    currency_id = fields.Many2one(string="Currency", comodel_name="res.currency", related="order_line.currency_id")
+    currency_id = fields.Many2one(string="Currency", comodel_name="res.currency", related="lem_id.sale_order_id.currency_id")
 
     price_tax = fields.Float(compute='_compute_amount', string='Total Tax', readonly=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True)
@@ -326,7 +315,7 @@ class LEMLabour(models.Model):
                 'ot_price_subtotal': taxes_ot['total_excluded'],
             })
 
-
+    # @api.depends('lem_id.task_id.project_id.sale_line_employee_ids','lem_id.sale_order_id')
     def _compute_order_line(self):
         for line in self:
             employee_mapping = line.lem_id.task_id.project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == line.job_title_id)
@@ -345,7 +334,7 @@ class LEMLabour(models.Model):
                     'employee_id': line.job_title_id.id,
                     'sale_line_id': order_line.id
                 })
-            if employee_ot_mapping:
+            if employee_ot_mapping.sale_line_id:
                 line.ot_order_line = employee_ot_mapping.sale_line_id
             else:
                 order_line = self.env['sale.order.line'].create({
